@@ -4,12 +4,12 @@ A lightweight, modular quantitative trading bot that runs on a Raspberry Pi 5 an
 
 ## Features
 
-- ⏱ Fetches real-time and historical stock data via Alpaca
-- 💡 Signal generation with customizable trading strategies
-- 📊 Backtesting engine to simulate portfolio performance
-- 🧠 Ranking system to select top tickers from a watchlist and to replace the bottom tickers
-- 🧯 Risk management to avoid extreme losses
-- 🧪 Paper/live trading with Alpaca's broker API
+- Fetches real-time and historical stock data via Alpaca
+- Signal generation with customisable trading strategies
+- Backtesting engine to simulate portfolio performance
+- Ranking system to select top tickers from a watchlist and to replace the bottom tickers
+- Risk management to avoid risking too much capital
+- Paper/live trading with Alpaca's broker API
 
 ## Structure
 
