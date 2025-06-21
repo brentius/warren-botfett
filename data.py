@@ -1,5 +1,5 @@
-#Data.py
-#Job: Get and clean price data
+#data.py
+#job: Get and clean price data
 
 #imports
 import pandas
