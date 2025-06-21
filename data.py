@@ -7,6 +7,7 @@ import yfinance
 import alpaca_trade_api
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timezone
 
 #load api key
 load_dotenv()
@@ -21,12 +22,19 @@ api = REST(alpaca_api_key, alpaca_secret, base_url)
 #fetch historical bars
 symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
 def historical_fetch(symbols, timeframe = "1Day", start = "2025-01-01"):
-    bars = api.get_bars(
+    history_bars = api.get_bars(
         symbols = symbols,
         timeframe = timeframe,
         start = start,
         adjustment = "raw"
     ).df
-    return bars
+    return history_bars
 
-#def live_fetch(symbols, timeframe = "1Min", start = )
+def live_fetch(symbols, timeframe = "1Min", start = datetime.now(timezone.utc)):
+    live_bars = api.get_bars(
+        symbols = symbols,
+        timeframe = timeframe,
+        start = start,
+        adjustment = "raw"
+    ).df
+    return live_bars
