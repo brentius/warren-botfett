@@ -1,6 +1,6 @@
 # WARREN BOTFETT
 
-A lightweight, modular quantitative trading bot that runs on a RPi5 and uses Alpaca to trade US stocks.
+A lightweight, modular quantitative trading bot that runs on a Raspberry Pi 5 and uses Alpaca to trade US stocks.
 
 ## Features
 
@@ -9,7 +9,7 @@ A lightweight, modular quantitative trading bot that runs on a RPi5 and uses Alp
 - 📊 Backtesting engine to simulate portfolio performance
 - 🧠 Ranking system to select top tickers from a watchlist and to replace the bottom tickers
 - 🧯 Risk management to avoid extreme losses
-- 🧪 Paper/live trading via Alpaca's broker API
+- 🧪 Paper/live trading with Alpaca's broker API
 
 ## TODO
 
