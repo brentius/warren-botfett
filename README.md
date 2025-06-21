@@ -13,6 +13,6 @@ A lightweight, modular quantitative trading bot that runs on a RPi5 and uses Alp
 
 ## TODO
 
-- [ ] Add a web UI for dataview, etc.
+- [ ] Add a web UI for dataview of stocks
 - [ ] Add email alerts for trades
 - [ ] Improve strategy optimization with machine learning

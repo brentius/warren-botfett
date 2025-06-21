@@ -2,7 +2,7 @@
 #scrape + clean price data
 
 #imports
-import pandas
+import pandas as pd
 import yfinance
 import alpaca_trade_api
 from dotenv import load_dotenv
@@ -18,3 +18,15 @@ base_url = os.getenv("APCA_API_BASE_URL")
 from alpaca_trade_api import REST
 api = REST(alpaca_api_key, alpaca_secret, base_url)
 
+#fetch historical bars
+symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
+def historical_fetch(symbols, timeframe = "1Day", start = "2025-01-01"):
+    bars = api.get_bars(
+        symbols = symbols,
+        timeframe = timeframe,
+        start = start,
+        adjustment = "raw"
+    ).df
+    return bars
+
+#def live_fetch(symbols, timeframe = "1Min", start = )
