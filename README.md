@@ -8,5 +8,5 @@ A lightweight, modular quantitative trading bot that runs on a RPi5 and uses Alp
 - 💡 Signal generation with customizable trading strategies
 - 📊 Backtesting engine to simulate portfolio performance
 - 🧠 Ranking system to select top tickers from a watchlist
-- 🧯 Risk management to avoid catastrophic YOLOs
+- 🧯 Risk management to avoid extreme losses
 - 🧪 Paper/live trading via Alpaca's broker API
