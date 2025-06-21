@@ -11,7 +11,7 @@ A lightweight, modular quantitative trading bot that runs on a RPi5 and uses Alp
 - 🧯 Risk management to avoid extreme losses
 - 🧪 Paper/live trading via Alpaca's broker API
 
-## TODO:
+## TODO
 
 - [ ] Add a web UI
 - [ ] Add email alerts for trades
