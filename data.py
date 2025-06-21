@@ -1,5 +1,5 @@
 #data.py
-#job: Get and clean price data
+#scrape + clean price data
 
 #imports
 import pandas
@@ -14,7 +14,7 @@ alpaca_api_key = os.getenv("APCA_API_KEY_ID")
 alpaca_secret = os.getenv("APCA_API_SECRET_KEY")
 base_url = os.getenv("APCA_API_BASE_URL")
 
-#REST client
+#REST client - connect to alpaca
 from alpaca_trade_api import REST
 api = REST(alpaca_api_key, alpaca_secret, base_url)
 
