@@ -4,7 +4,9 @@
 #imports
 import pandas as pd
 import yfinance
-import alpaca_trade_api
+from alpaca.data.historical import StockHistoricalDataClient
+from alpaca.data.requests import StockBarsRequest
+from alpaca.data.timeframe import TimeFrame
 from dotenv import load_dotenv
 import os
 
@@ -14,9 +16,8 @@ alpaca_api_key = os.getenv("APCA_API_KEY_ID")
 alpaca_secret = os.getenv("APCA_API_SECRET_KEY")
 base_url = os.getenv("APCA_API_BASE_URL")
 
-#REST client - connect to alpaca
-from alpaca_trade_api import REST
-api = REST(alpaca_api_key, alpaca_secret, base_url)
+#create client - connect to alpaca
+client = StockHistoricalDataClient(alpaca_api_key, alpaca_secret)
 
 #fetch historical bars + clean
 symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
@@ -33,6 +34,11 @@ def clean_data(raw_history, symbols):
         history_data[symbol] = df
     return history_data
 
-def historical_fetch(symbols, timeframe = "1Day", start = "2025-01-01"):
-    raw_history = api.get_bars(symbols, timeframe, start = start, adjustment = "raw").df
+def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
+    request = StockBarsRequest(
+        symbol_or_symbols = symbols,
+        start = start,
+        timeframe = timeframe
+    )
+    raw_history = client.get_stock_bars(request).df
     return clean_data(raw_history, symbols)
