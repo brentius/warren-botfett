@@ -18,15 +18,18 @@ base_url = os.getenv("APCA_API_BASE_URL")
 from alpaca_trade_api import REST
 api = REST(alpaca_api_key, alpaca_secret, base_url)
 
-#fetch historical bars
+#fetch historical bars + clean
 symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
 def historical_fetch(symbols, timeframe = "1Day", start = "2025-01-01"):
-    history_bars = api.get_bars(
-        symbols = symbols,
-        timeframe = timeframe,
-        start = start,
-        adjustment = "raw"
-    ).df
-    return history_bars
-
-live_bar = api.get_latest_bar(symbols)
+    raw_history = api.get_bars(symbols, timeframe, start = start, adjustment = "raw").df
+    def clean_data(raw_history, symbols):
+        history_data = {}
+        for symbol in symbols:
+            df = raw_history.loc[symbol].copy()
+            df.index = pd.datetime(df.index)
+            df.index = df.index.tz_convert("America/New York")
+            df.sort_index(inplace = True)
+            df.columns = [col.lower() for col in df.columns]
+            df.dropna(inplace = True)
+            history_data[symbol] = df
+    return clean_data(raw_history, symbols)
