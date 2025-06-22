@@ -3,10 +3,11 @@
 
 #imports
 import pandas as pd
-import yfinance
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
+#from alpaca.data.live import StockDataStream
+#from alpaca.data.models import Trade
 from dotenv import load_dotenv
 import os
 
