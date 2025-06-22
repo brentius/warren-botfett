@@ -52,7 +52,7 @@ def live_fetch(symbols):
             prices[bar.symbol] = bar.close
             if len(prices) == len(symbols):
                 await stream.stop_ws()
-        stream = StockDataStream(api_key, api_secret, base_url=base_url)
+        stream = StockDataStream(api_key, api_secret, base_url = base_url)
         stream.subscribe_bars(on_bar, symbols)
         await stream.run()
         return prices
