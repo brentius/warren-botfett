@@ -13,7 +13,7 @@ A lightweight, modular quantitative trading bot that runs on a Raspberry Pi 5 an
 
 ## Structure
 
-There are 7 python files in this repo (discounting main.py):
+There are 7 python files in this repo (discounting ```main.py```):
 - ```data.py``` fetches historical and live stock data from Alpaca and feeds it into a ```pandas.DataFrame```
 - ```strategy.py``` determines whether to buy, sell or hold a stock given a ```pandas.DataFrame``` of price data
 - ```backtest.py``` runs the strategy on historical data to simulate portfolio performance
