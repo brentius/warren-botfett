@@ -6,19 +6,19 @@ import pandas as pd
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
-#from alpaca.data.live import StockDataStream
-#from alpaca.data.models import Trade
+from alpaca.data.live import StockDataStream
+import asyncio
 from dotenv import load_dotenv
 import os
 
 #load api keys
 load_dotenv()
-alpaca_api_key = os.getenv("APCA_API_KEY_ID")
-alpaca_secret = os.getenv("APCA_API_SECRET_KEY")
+api_key = os.getenv("APCA_API_KEY_ID")
+api_secret = os.getenv("APCA_API_SECRET_KEY")
 base_url = os.getenv("APCA_API_BASE_URL")
 
 #create client - connect to alpaca
-client = StockHistoricalDataClient(alpaca_api_key, alpaca_secret)
+client = StockHistoricalDataClient(api_key, api_secret, base_url=base_url)
 
 #fetch historical bars + clean
 symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
@@ -43,3 +43,17 @@ def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
     )
     raw_history = client.get_stock_bars(request).df
     return clean_data(raw_history, symbols)
+
+#fetch live prices
+def get_live_prices(symbols):
+    async def fetch_prices():
+        prices = {}
+        async def on_bar(bar):
+            prices[bar.symbol] = bar.close
+            if len(prices) == len(symbols):
+                await stream.stop_ws()
+        stream = StockDataStream(api_key, api_secret, base_url=base_url)
+        stream.subscribe_bars(on_bar, symbols)
+        await stream.run()
+        return prices
+    return asyncio.run(fetch_prices())
