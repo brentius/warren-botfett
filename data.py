@@ -18,7 +18,7 @@ api_secret = os.getenv("APCA_API_SECRET_KEY")
 base_url = os.getenv("APCA_API_BASE_URL")
 
 #create client - connect to alpaca
-client = StockHistoricalDataClient(api_key, api_secret, base_url=base_url)
+client = StockHistoricalDataClient(api_key, api_secret, base_url = base_url)
 
 #fetch historical bars + clean
 symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
