@@ -21,17 +21,16 @@ base_url = os.getenv("APCA_API_BASE_URL")
 client = StockHistoricalDataClient(api_key, api_secret, base_url = base_url)
 
 #fetch historical bars + clean
-symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
-
 def clean_data(raw_history, symbols):
     history_data = {}
     for symbol in symbols:
         df = raw_history.loc[symbol].copy()
         df.index = pd.to_datetime(df.index)
-        df.index = df.index.tz_localize("UTC").tz_convert("America/New York")
+        df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
         df.sort_index(inplace = True)
-        df.columns = [col.lower() for col in df.columns]
-        df.dropna(inplace = True)
+        # df.columns = [col.lower() for col in df.columns]
+        # Drop rows only if 'close' price is missing, keep others for further analysis
+        df.dropna(subset=['close'], inplace=True)
         history_data[symbol] = df
     return history_data
 
