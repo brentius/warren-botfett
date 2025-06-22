@@ -57,6 +57,10 @@ To fetch data and check signals:
 python strategy.py
 ```
 
+## Requirements:
+- Alpaca API keys (```alpaca.markets```)
+- Python 3.x or above
+
 ## Todo
 
 - [ ] Add a web UI for dataview of stocks
