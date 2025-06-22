@@ -28,19 +28,18 @@ def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
         timeframe = timeframe
     )
     raw_history = client.get_stock_bars(request).df
-    return raw_history
-
-def clean_data(raw_history, symbols):
-    history_data = {}
-    for symbol in symbols:
-        df = raw_history.loc[symbol].copy()
-        df.index = pd.to_datetime(df.index)
-        df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
-        df.sort_index(inplace = True)
-        df.columns = [col.lower() for col in df.columns]
-        df.dropna(subset=['close'], inplace=True)
-        history_data[symbol] = df
-    return history_data
+    def clean_data(raw_history, symbols):
+        history_data = {}
+        for symbol in symbols:
+            df = raw_history.loc[symbol].copy()
+            df.index = pd.to_datetime(df.index)
+            df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
+            df.sort_index(inplace = True)
+            df.columns = [col.lower() for col in df.columns]
+            df.dropna(subset=['close'], inplace=True)
+            history_data[symbol] = df
+        return history_data
+    return clean_data(raw_history, symbols)
 
 #fetch live prices
 def live_fetch(symbols):
