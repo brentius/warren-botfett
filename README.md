@@ -22,7 +22,42 @@ There are 7 python files in this repo (discounting ```main.py```):
 - ```risk.py``` enforces rules to protect capital and limit risk per trade
 - ```logger.py``` tracks all trades, signals, errors, and performance for later review
 
-## TODO
+## Usage
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/brentius/warren-botfett.git
+cd warren-botfett
+```
+
+2. Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Set up your ```.env``` file with Alpaca API keys:
+
+```env
+APCA_API_KEY_ID=your_api_key_here
+APCA_API_SECRET_KEY=your_secret_key_here
+APCA_API_BASE_URL=https://paper-api.alpaca.markets
+```
+
+4. Run it! To backtest a strategy:
+
+```bash
+python backtest.py
+```
+
+To fetch data and check signals:
+
+```bash
+python strategy.py
+```
+
+## Todo
 
 - [ ] Add a web UI for dataview of stocks
 - [ ] Add email alerts for trades
