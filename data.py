@@ -45,7 +45,7 @@ def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
     return clean_data(raw_history, symbols)
 
 #fetch live prices
-def get_live_prices(symbols):
+def live_fetch(symbols):
     async def fetch_prices():
         prices = {}
         async def on_bar(bar):
