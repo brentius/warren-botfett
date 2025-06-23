@@ -19,9 +19,17 @@ def account_info(client):
         "equity": float(account.equity)
     }
 
-def open_positions(client, live_data):
-    positions = client.get_call_positions()
-    return{pos.symbol: float(pos.qty) for pos in positions}
+def open_positions(client):
+    positions = client.get_all_positions()
+    return {
+        pos.symbol: {
+            "qty": float(pos.qty),
+            "entry_price": float(pos.avg_entry_price),
+            "market_value": float(pos.market_value),
+            "unrealized_pl": float(pos.unrealized_pl)
+        }
+        for pos in positions
+    }
 
 def place_order(trading_client, symbol, qty, side):
     order = MarketOrderRequest(
@@ -34,7 +42,7 @@ def place_order(trading_client, symbol, qty, side):
 
 def execute(client, ranked_signals):
     account_info = account_info(client)
-    open_positions = open_positions(client)
+    positions = open_positions(client)
 
     cash = account_info["cash"]
 
@@ -43,7 +51,7 @@ def execute(client, ranked_signals):
         confidence = signal["confidence"]
         position_size = signal.get("position_size", 0.1) #default 10% per trade
 
-        if symbol in open_positions: #skip if already holding stock
+        if symbol in positions: #skip if already holding stock
             continue
 
         allocation = cash * position_size

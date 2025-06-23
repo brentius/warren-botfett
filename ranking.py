@@ -6,7 +6,7 @@ import pandas as pd
 from typing import Dict, Any
 
 #rank stocks function
-def rank(signals, top_n = 5, min_confidence = 0.8):
+def rank(signals, top_n, min_confidence):
 
     #remove HOLD / SELL + any BUY with confidence below threshold
     filtered_signals = {

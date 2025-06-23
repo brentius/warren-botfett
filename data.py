@@ -11,7 +11,7 @@ import asyncio
 from main import api_key, api_secret, base_url
 
 #create client - connect to alpaca
-client = StockHistoricalDataClient(api_key, api_secret, base_url = base_url)
+dataclient = StockHistoricalDataClient(api_key, api_secret, base_url = base_url)
 
 #fetch historical bars + clean
 def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
@@ -20,7 +20,7 @@ def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
         start = start,
         timeframe = timeframe
     )
-    raw_history = client.get_stock_bars(request).df
+    raw_history = dataclient.get_stock_bars(request).df
     def clean_data(raw_history, symbols):
         history_data = {}
         for symbol in symbols:
@@ -47,3 +47,6 @@ def live_fetch(symbols):
         await stream.run()
         return prices
     return asyncio.run(fetch_prices())
+
+#Functions exported: live_fetch, historical_fetch
+#Variables exported: NONE
