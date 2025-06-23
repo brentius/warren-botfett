@@ -2,7 +2,6 @@
 
 #import
 from typing import Dict
-from broker import positions, equity
 
 max_position = 0.2
 min_trade = 30
@@ -29,6 +28,9 @@ def calculate_position_size(signal, cash, volatility = 0.02):
 def is_allowed(symbol, positions):
     return symbol not in positions and len(positions) < max_total_positions
 
-def check_exposure(positions, equity):
+def check_exposure(symbol, positions, equity, max_total_allocation):
     risk = sum(positions.values())
     return risk / equity < max_total_allocation
+
+def stop_loss(entry_price, threshold):
+    return entry_price * (1 - threshold)
