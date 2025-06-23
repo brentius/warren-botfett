@@ -15,7 +15,7 @@ def rank(signals, top_n = 5, min_confidence = 0.8):
     }
 
     #convert filtered_signals -> list of tuples + sort
-    ranked = sorted( #inbuild "sorted" function
+    ranked = sorted( #inbuilt "sorted" function
         filtered_signals.items(),
         key = lambda x: x[1]["confidence"], #sort by confidence
         reverse = True #descending order
