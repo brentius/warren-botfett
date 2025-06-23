@@ -4,7 +4,7 @@
 from data import historical_fetch, live_fetch
 from strategy import evaluate
 from ranking import rank
-from broker import execute
+from broker import execute, client
 from dotenv import load_dotenv
 import os
 
@@ -22,3 +22,6 @@ live_data = live_fetch(symbols)
 #evaluate signals based on strategy - BUY / HOLD / SELL
 signals = evaluate(history_data)
 ranked_signals = rank(signals)
+
+#execute
+execute(client, ranked_signals)
