@@ -10,7 +10,7 @@ from main import api_key, api_secret, base_url, live_data
 #create client - connect to alpaca
 client = TradingClient(api_key, api_secret, base_url = base_url, paper = True)
 
-def account_info(client, ):
+def account_info(client):
     account = client.get_account()
     return{
         "cash": float(account.cash),
@@ -41,9 +41,9 @@ def execute(client, ranked_signals):
     for signal in ranked_signals:
         symbol = signal["symbol"]
         confidence = signal["confidence"]
-        position_size = signal.get("position_size", 0.1)
+        position_size = signal.get("position_size", 0.1) #default 10% per trade
 
-        if symbol in open_positions:
+        if symbol in open_positions: #skip if already holding stock
             continue
 
         allocation = cash * position_size
