@@ -40,9 +40,9 @@ pip install -r requirements.txt
 3. Set up your ```.env``` file with Alpaca API keys:
 
 ```env
-APCA_API_KEY_ID=your_api_key_here
-APCA_API_SECRET_KEY=your_secret_key_here
-APCA_API_BASE_URL=https://paper-api.alpaca.markets
+APCA_API_KEY_ID = your_api_key_here
+APCA_API_SECRET_KEY = your_secret_key_here
+APCA_API_BASE_URL = https://paper-api.alpaca.markets
 ```
 
 4. Run it! To backtest a strategy:
