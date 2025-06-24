@@ -1,11 +1,5 @@
 #ranking.py
 #ranks stocks based on signals (from strategy.py)
-
-#imports
-import pandas as pd
-from typing import Dict, Any
-
-#rank stocks function
 def rank(signals, top_n, min_confidence):
 
     #remove HOLD / SELL + any BUY with confidence below threshold
