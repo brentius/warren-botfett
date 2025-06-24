@@ -31,9 +31,9 @@ def open_positions(client):
         for pos in positions
     }
 
-def place_order(trading_client, symbol, qty, side):
+def place_order(client, symbol, qty, side):
     order = MarketOrderRequest(
-        symbol = symbol, 
+        symbol = symbol,
         qty = qty,
         side = OrderSide.BUY if side == "BUY" else OrderSide.SELL,
         time_in_force = TimeInForce.GTC
