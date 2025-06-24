@@ -41,12 +41,12 @@ for symbol, pos in positions.items():
 
 for signal in ranked_signals:
     symbol = signal["symbol"]
-    if not check_exposure(symbol, positions, equity):
+    if not check_exposure(symbol, positions, equity, max_total_allocation = 0.7):
         continue
     if is_allowed(symbol, positions):
-        size = calculate_position_size(signal, cash)
+        size = calculate_position_size(equity, live_price["symbol"], positions)
         if size > 0:
-            signal["positon_size"] = size
+            signal["position_size"] = size
             final_trades.append(signal)
 
 #execute
