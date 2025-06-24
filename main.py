@@ -4,7 +4,7 @@
 from data import historical_fetch, live_fetch
 from strategy import evaluate
 from ranking import rank
-from broker import execute, account_info, open_positions, client
+from broker import execute, account_info, open_positions, close, client
 from risk import calculate_position_size, is_allowed, check_exposure, stop_loss
 
 from dotenv import load_dotenv
@@ -29,11 +29,15 @@ positions = open_positions(client)
 equity = account_info["equity"]
 
 history_data = historical_fetch(symbols, start="2025-01-01")
-live_data = live_fetch(symbols)
+live_price = live_fetch(symbols)
 
 #evaluate signals based on strategy - BUY / HOLD / SELL
 signals = evaluate(history_data)
 ranked_signals = rank(signals, top_n)
+
+for symbol, pos in positions.items():
+    if stop_loss(pos["entry_price"], live_price[symbol]):
+        close(client, symbol)
 
 for signal in ranked_signals:
     symbol = signal["symbol"]
