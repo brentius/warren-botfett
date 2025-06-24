@@ -60,3 +60,9 @@ def execute(client, ranked_signals):
         qty = int(allocation // price)
         if qty > 0:
             place_order(client, symbol, qty, "BUY")
+
+def close(client, symbol):
+    positions = client.get_all_positions()
+    symbols = [p.symbol for p in positions]
+    if symbol in symbols:
+        client.close_position(symbol)
