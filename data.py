@@ -8,7 +8,14 @@ from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.live import StockDataStream
 import asyncio
-from main import api_key, api_secret, base_url
+from dotenv import load_dotenv
+import os
+
+#load api keys
+load_dotenv()
+api_key = os.getenv("APCA_API_KEY_ID")
+api_secret = os.getenv("APCA_API_SECRET_KEY")
+base_url = os.getenv("APCA_API_BASE_URL")
 
 #create client - connect to alpaca
 dataclient = StockHistoricalDataClient(api_key, api_secret, base_url = base_url)
@@ -33,6 +40,9 @@ def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
             history_data[symbol] = df
         return history_data
     return clean_data(raw_history, symbols)
+
+def get_df(symbol):
+    return historical_fetch([symbol])[symbol]
 
 #fetch live prices
 def live_fetch(symbols):

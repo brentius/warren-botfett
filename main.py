@@ -1,20 +1,11 @@
 #main.py
 #puts everything together
 
-from data import historical_fetch, live_fetch
+from data import historical_fetch, live_fetch, get_df
 from strategy import evaluate
 from ranking import rank
 from broker import execute, account_info, open_positions, close, client
 from risk import calculate_position_size, is_allowed, check_exposure, stop_loss
-
-from dotenv import load_dotenv
-import os
-
-#load api keys
-load_dotenv()
-api_key = os.getenv("APCA_API_KEY_ID")
-api_secret = os.getenv("APCA_API_SECRET_KEY")
-base_url = os.getenv("APCA_API_BASE_URL")
 
 #define symbols, fetch + clean historical data
 symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
@@ -33,14 +24,14 @@ live_price = live_fetch(symbols)
 
 #evaluate signals based on strategy - BUY / HOLD / SELL
 signals = evaluate(history_data)
-ranked_signals = rank(signals, top_n)
+ranked_signals = rank(signals, top_n, min_confidence)
 
 for symbol, pos in positions.items():
     if stop_loss(pos["entry_price"], live_price[symbol]):
         close(client, symbol)
 
 for signal in ranked_signals:
-    symbol = signal["symbol"]
+    signal = ranked_signals["symbol"]
     if not check_exposure(symbol, positions, equity, max_total_allocation = 0.7):
         continue
     if is_allowed(symbol, positions):
@@ -50,4 +41,4 @@ for signal in ranked_signals:
             final_trades.append(signal)
 
 #execute
-execute(client, ranked_signals)
+execute(client, ranked_signals, live_price)

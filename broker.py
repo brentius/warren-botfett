@@ -5,7 +5,7 @@
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
-from main import api_key, api_secret, base_url, live_data
+from data import api_key, api_secret, base_url
 
 #create client - connect to alpaca
 client = TradingClient(api_key, api_secret, base_url = base_url, paper = True)
@@ -40,7 +40,7 @@ def place_order(client, symbol, qty, side):
     )
     client.submit_order(order)
 
-def execute(client, ranked_signals):
+def execute(client, ranked_signals, live_price):
     account_info = account_info(client)
     positions = open_positions(client)
 
@@ -55,7 +55,7 @@ def execute(client, ranked_signals):
             continue
 
         allocation = cash * position_size
-        price = live_data
+        price = live_price
 
         qty = int(allocation // price)
         if qty > 0:
