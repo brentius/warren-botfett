@@ -14,12 +14,15 @@ top_n = 3
 min_confidence = 0.8
 risk_perc = 0.05
 
-cash = account_info["cash"]
-entry_price = open_positions["entry_price"]
+accinfo = account_info(client)
 positions = open_positions(client)
-equity = account_info["equity"]
+
+cash = accinfo["cash"]
+equity = accinfo["equity"]
+#entry_price = positions["entry_price"]
 
 history_data = historical_fetch(symbols, start="2025-01-01")
+print(history_data)
 live_price = live_fetch(symbols)
 
 #evaluate signals based on strategy - BUY / HOLD / SELL

@@ -33,12 +33,13 @@ def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
         for symbol in symbols:
             df = raw_history.loc[symbol].copy()
             df.index = pd.to_datetime(df.index)
-            df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
+#            df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
             df.sort_index(inplace = True)
             df.columns = [col.lower() for col in df.columns]
             df.dropna(subset=['close'], inplace=True)
             history_data[symbol] = df
         return history_data
+#    print(raw_history)
     return clean_data(raw_history, symbols)
 
 def get_df(symbol):
@@ -52,7 +53,7 @@ def live_fetch(symbols):
             prices[bar.symbol] = bar.close
             if len(prices) == len(symbols):
                 await stream.stop_ws()
-        stream = StockDataStream(api_key, api_secret, base_url = base_url)
+        stream = StockDataStream(api_key, api_secret)
         stream.subscribe_bars(on_bar, symbols)
         await stream.run()
         return prices

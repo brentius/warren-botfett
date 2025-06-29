@@ -8,14 +8,14 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 from data import api_key, api_secret, base_url
 
 #create client - connect to alpaca
-client = TradingClient(api_key, api_secret, base_url = base_url, paper = True)
+client = TradingClient(api_key, api_secret, paper = True)
 
 def account_info(client):
     account = client.get_account()
     return{
         "cash": float(account.cash),
         "buying_power": float(account.buying_power),
-        "portfolio_value:": float(account.potfolio_value),
+        "portfolio_value:": float(account.portfolio_value),
         "equity": float(account.equity)
     }
 
