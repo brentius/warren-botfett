@@ -18,7 +18,7 @@ api_secret = os.getenv("APCA_API_SECRET_KEY")
 base_url = os.getenv("APCA_API_BASE_URL")
 
 #create client - connect to alpaca
-dataclient = StockHistoricalDataClient(api_key, api_secret, base_url = base_url)
+dataclient = StockHistoricalDataClient(api_key, api_secret)
 
 #fetch historical bars + clean
 def historical_fetch(symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
