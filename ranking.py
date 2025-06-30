@@ -17,11 +17,10 @@ def rank(signals, top_n, min_confidence):
 
     top_ranked = ranked[:top_n]
 
-    return[
-        {
-            "symbol": symbol,
+    return{
+            symbol: {
             "confidence": signal["confidence"],
             "position_size": signal.get("position_size", 0.1)
+            }
+            for symbol, signal in top_ranked
         }
-        for symbol, signal in top_ranked
-    ]

@@ -8,7 +8,7 @@ from broker import execute, account_info, open_positions, close, client
 from risk import calculate_position_size, is_allowed, check_exposure, stop_loss
 
 #define symbols, fetch + clean historical data
-symbols = ["AAPL", "MSFT", "NVDA", "TSLA"]
+symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB"]
 final_trades = []
 top_n = 3
 min_confidence = 0.8
@@ -23,18 +23,23 @@ equity = accinfo["equity"]
 
 history_data = historical_fetch(symbols, start="2025-01-01")
 print(history_data)
-live_price = live_fetch(symbols)
+
+for symbol in symbols:
+    df = get_df(symbol)
+#live_price = live_fetch(symbols)
 
 #evaluate signals based on strategy - BUY / HOLD / SELL
-signals = evaluate(history_data)
+signals = evaluate(history_data, df)
+print(signals)
 ranked_signals = rank(signals, top_n, min_confidence)
+print(ranked_signals)
 
 for symbol, pos in positions.items():
     if stop_loss(pos["entry_price"], live_price[symbol]):
         close(client, symbol)
 
 for signal in ranked_signals:
-    signal = ranked_signals["symbol"]
+    signal = ranked_signals[symbol]
     if not check_exposure(symbol, positions, equity, max_total_allocation = 0.7):
         continue
     if is_allowed(symbol, positions):
