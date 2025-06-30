@@ -22,7 +22,7 @@ equity = accinfo["equity"]
 #entry_price = positions["entry_price"]
 
 history_data = historical_fetch(symbols, start="2025-01-01")
-print(history_data)
+#print(history_data)
 
 for symbol in symbols:
     df = get_df(symbol)
@@ -32,14 +32,15 @@ for symbol in symbols:
 signals = evaluate(history_data, df)
 print(signals)
 ranked_signals = rank(signals, top_n, min_confidence)
-print(ranked_signals)
+top_ranked = ranked_signals[:top_n]
+print(top_ranked)
 
 for symbol, pos in positions.items():
     if stop_loss(pos["entry_price"], live_price[symbol]):
         close(client, symbol)
 
-for signal in ranked_signals:
-    signal = ranked_signals[symbol]
+for signal in top_ranked:
+    signal = top_ranked[symbol]
     if not check_exposure(symbol, positions, equity, max_total_allocation = 0.7):
         continue
     if is_allowed(symbol, positions):
@@ -49,4 +50,4 @@ for signal in ranked_signals:
             final_trades.append(signal)
 
 #execute
-execute(client, ranked_signals, live_price)
+execute(client, top_ranked, live_price)
