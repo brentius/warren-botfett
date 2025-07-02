@@ -46,17 +46,19 @@ def get_df(symbol):
     return historical_fetch([symbol])[symbol]
 
 #fetch live prices
-def live_fetch(symbols):
+def live_fetch(symbol): # Changed to accept a single symbol
     async def fetch_prices():
         prices = {}
         async def on_bar(bar):
             prices[bar.symbol] = bar.close
-            if len(prices) == len(symbols):
+            if len(prices) == len([symbol]):  # Corrected length check
                 await stream.stop_ws()
+
         stream = StockDataStream(api_key, api_secret)
-        stream.subscribe_bars(on_bar, symbols)
+        stream.subscribe_bars(on_bar, symbol) # Pass the single symbol
         await stream.run()
         return prices
+
     return asyncio.run(fetch_prices())
 
 #Functions exported: live_fetch, historical_fetch
