@@ -15,12 +15,4 @@ def rank(signals, top_n, min_confidence):
         reverse = True #descending order
     )
 
-    top_ranked = ranked[:top_n]
-
-    return{
-            symbol: {
-            "confidence": signal["confidence"],
-            "position_size": signal.get("position_size", 0.1)
-            }
-            for symbol, signal in top_ranked
-        }
+    return(ranked[:top_n])
