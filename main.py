@@ -1,11 +1,23 @@
 #main.py
 #puts everything together
 
-from data import historical_fetch, live_fetch, get_df
+from alpaca.trading.client import TradingClient
+from alpaca.data.historical import StockHistoricalDataClient
+from data import historical_fetch, live_fetch, get_df, api_key, api_secret
 from strategy import evaluate
 from ranking import rank
 from broker import execute, account_info, open_positions, close, client
 from risk import calculate_position_size, is_allowed, check_exposure, stop_loss
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv("APCA_API_KEY_ID")
+api_secret = os.getenv("APCA_API_SECRET_KEY")
+base_url = os.getenv("APCA_API_BASE_URL")
+
+client = TradingClient(api_key, api_secret, paper = True)
+dataclient = StockHistoricalDataClient(api_key, api_secret)
 
 #define symbols, fetch + clean historical data
 symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB"]
@@ -33,12 +45,11 @@ print(signals)
 ranked_signals = rank(signals, top_n, min_confidence)
 print(ranked_signals)
 
-for symbol in symbols:
-    live_price = live_fetch(symbol)
-    print(live_price)
+live_prices = live_fetch(symbols, api_key, api_secret)
+print(live_prices)
 
 for symbol, pos in positions.items():
-    if stop_loss(pos["entry_price"], live_price[symbol]):
+    if stop_loss(pos["entry_price"], live_prices[symbol]):
         close(client, symbol)
 
 for i in range(0, len(ranked_signals)):
@@ -47,10 +58,10 @@ for i in range(0, len(ranked_signals)):
     if not check_exposure(symbol, positions, equity, max_total_allocation = 0.7):
         continue
     if is_allowed(symbol, positions):
-        size = calculate_position_size(equity, live_price["symbol"], positions)
+        size = calculate_position_size(equity, live_prices[symbol], positions)
         if size > 0:
             signal["position_size"] = size
             final_trades.append(signal)
 
 #execute
-execute(client, ranked_signals, live_price)
+execute(client, ranked_signals, live_prices)
