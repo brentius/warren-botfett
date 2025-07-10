@@ -1,6 +1,3 @@
-#data.py
-#JOB: fetch and clean stock data (turn into dataframes)
-
 import pandas as pd
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.requests import StockBarsRequest
