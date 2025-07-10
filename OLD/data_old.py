@@ -6,7 +6,6 @@ import pandas as pd
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.live import StockDataStream
-import asyncio
 
 #fetch historical bars + clean
 def historical_fetch(dataclient, symbols, timeframe = TimeFrame.Day, start = "2025-01-01"):
@@ -21,7 +20,7 @@ def historical_fetch(dataclient, symbols, timeframe = TimeFrame.Day, start = "20
         for symbol in symbols:
             df = raw_history.loc[symbol].copy()
             df.index = pd.to_datetime(df.index)
-#            df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
+#           df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
             df.sort_index(inplace = True)
             df.columns = [col.lower() for col in df.columns]
             df.dropna(subset=['close'], inplace=True)

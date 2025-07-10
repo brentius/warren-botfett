@@ -3,12 +3,13 @@
 
 from alpaca.trading.client import TradingClient
 from alpaca.data.historical import StockHistoricalDataClient
-from data import historical_fetch, live_fetch, get_df, api_key, api_secret
+from data import historical_fetch, live_fetch, get_df
 from strategy import evaluate
 from ranking import rank
-from broker import execute, account_info, open_positions, close, client
+from broker import execute, account_info, open_positions, close
 from risk import calculate_position_size, is_allowed, check_exposure, stop_loss
 from dotenv import load_dotenv
+from alpaca.data.timeframe import TimeFrame
 import os
 
 load_dotenv()
@@ -33,7 +34,7 @@ cash = accinfo["cash"]
 equity = accinfo["equity"]
 #entry_price = positions["entry_price"]
 
-history_data = historical_fetch(symbols, start="2025-01-01")
+history_data = historical_fetch(symbols, dataclient, timeframe = TimeFrame.Day, start="2025-01-01")
 #print(history_data)
 
 for symbol in symbols:

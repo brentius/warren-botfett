@@ -4,7 +4,6 @@
 #imports
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
-from data import api_key, api_secret, base_url
 
 def account_info(client):
     account = client.get_account()
