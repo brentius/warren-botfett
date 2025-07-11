@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 from data import fetch_historical_data, fetch_live_data
 from strategy import evaluate
-from rank import rank_buy, rank_sell
+from rank import rank
 from broker import place_order
 
 load_dotenv()
@@ -25,15 +25,13 @@ live_data = fetch_live_data(liveclient, symbols)
 signals = evaluate(historical_data) #evaluate based on signals
 print(signals)
 
-ranked_buy = rank_buy(signals, top_n = 3, conf_threshold = 0.5)
-ranked_sell = rank_sell(signals, top_n = 3, conf_threshold = 0.5)
-print(ranked_buy, ranked_sell)
+ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5)
+print(ranked_signals)
 
-extracted_buy = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_buy]
-extracted_sell = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_sell]
-print(extracted_buy, extracted_sell)
+extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
+print(extracted_signals)
 
 qty = 0
 
-for item in extracted_buy:
+for item in extracted_signals:
     place_order(tradeclient, symbol = item[0], qty = qty, order_side = item[2])
