@@ -6,6 +6,7 @@ import os
 from data import fetch_historical_data, fetch_live_data
 from strategy import evaluate
 from rank import rank_buy, rank_sell
+from broker import place_order
 
 load_dotenv()
 api_key = os.getenv("APCA_API_KEY_ID")
@@ -27,3 +28,12 @@ print(signals)
 ranked_buy = rank_buy(signals, top_n = 3, conf_threshold = 0.5)
 ranked_sell = rank_sell(signals, top_n = 3, conf_threshold = 0.5)
 print(ranked_buy, ranked_sell)
+
+extracted_buy = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_buy]
+extracted_sell = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_sell]
+print(extracted_buy, extracted_sell)
+
+qty = 0
+
+for item in extracted_buy:
+    place_order(tradeclient, symbol = item[0], qty = qty, order_side = item[2])
