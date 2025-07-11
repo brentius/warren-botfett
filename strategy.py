@@ -9,7 +9,7 @@ def evaluate(historical_data):
     for symbol, df in historical_data.items():
         #placeholder strategy
         signal = {
-            "action": "BUY" if df["close"].iloc[-1] > df["close"].mean() else "HOLD",
+            "action": "BUY" if df["close"].iloc[-1] > df["close"].mean() else "SELL",
             "confidence": round(random.random(), 2) #placeholder confidence
         }
         signals[symbol] = signal
