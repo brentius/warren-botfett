@@ -23,15 +23,8 @@ historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(liveclient, symbols)
 
 signals = evaluate(historical_data) #evaluate based on signals
-print(signals)
-
 ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5)
-print(ranked_signals)
-
 extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
-print(extracted_signals)
-
-qty = 0
 
 for item in extracted_signals:
-    place_order(tradeclient, symbol = item[0], qty = qty, order_side = item[2])
+    place_order(tradeclient, symbol = item[0], qty = 0, order_side = item[2])
