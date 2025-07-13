@@ -22,11 +22,12 @@ def open_positions(client):
         for pos in positions
     }
 
-def place_order(client, symbol, qty, order_side):
-    order = MarketOrderRequest(
-        symbol = symbol,
-        qty = qty,
-        side = OrderSide.BUY if order_side == "BUY" else OrderSide.SELL,
-        time_in_force = TimeInForce.GTC
-    )
-    client.submit_order(order)
+def execute(client, symbol, qty, order_side):
+    def place_order():
+        order = MarketOrderRequest(
+            symbol = symbol,
+            qty = qty,
+            side = OrderSide.BUY if order_side == "BUY" else OrderSide.SELL,
+            time_in_force = TimeInForce.GTC
+        )
+        client.submit_order(order)
