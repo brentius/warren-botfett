@@ -6,7 +6,8 @@ import os
 from data import fetch_historical_data, fetch_live_data
 from strategy import evaluate
 from rank import rank
-from broker import place_order
+from risk import calculate_position_size
+from broker import execute
 
 load_dotenv()
 api_key = os.getenv("APCA_API_KEY_ID")
@@ -17,14 +18,13 @@ tradeclient = TradingClient(api_key, api_secret, paper = True)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)
 
-symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB"] #symbols - trades these stocks
+symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB", "NVDA"] #symbols - trades these stocks
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(liveclient, symbols)
-
-signals = evaluate(historical_data) #evaluate based on signals
+signals = evaluate(historical_data)
 ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5)
 extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
 
 for item in extracted_signals:
-    place_order(tradeclient, symbol = item[0], qty = 0, order_side = item[2])
+    execute(tradeclient, symbol = item[0], qty = 0.000001, order_side = item[2])
