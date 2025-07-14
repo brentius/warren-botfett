@@ -4,39 +4,50 @@ import ta
 import random
 
 #PLANS: use multiple strategies, which strategy used: determine by ranking
-def momentum(historical_data):
-    signals = {}
-    for symbol, df in historical_data.items():
-        momentum = (df["close"].iloc[-1] - df["close"].iloc[-10]) / df["close"].iloc[-10]
-        if momentum > 0.02:
-            conf = min(1.0, momentum / 0.05)  # cap at 100% confidence
-            signal = {"action": "BUY", "confidence": round(conf, 2)}
-        elif momentum < -0.02:
-            conf = min(1.0, abs(momentum) / 0.05)
-            signal = {"action": "SELL", "confidence": round(conf, 2)}
-        else:
-            conf = 1 - (abs(momentum) / 0.02)
-            signal = {"action": "HOLD", "confidence": round(conf, 2)}
-        signals[symbol] = signal
-    return signals
+def momentum(df):
+    momentum = (df["close"].iloc[-1] - df["close"].iloc[-10]) / df["close"].iloc[-10]
+    if momentum > 0.02:
+        conf = min(1.0, momentum / 0.05)  # cap at 100% confidence
+        return{"action": "BUY", "confidence": conf}
+    elif momentum < -0.02:
+        conf = min(1.0, abs(momentum) / 0.05)
+        return{"action": "SELL", "confidence": conf}
+    else:
+        conf = 1 - (abs(momentum) / 0.02)
+        return{"action": "HOLD", "confidence": conf}
 
-def mean_reversion(historical_data):
-    signals = {}
-    for symbol, df in historical_data.items():
-        ma = df["close"].rolling(20).mean().iloc[-1]
-        std = df["close"].rolling(20).std().iloc[-1]
-        price = df["close"].iloc[-1]
+def mean_reversion(df):
+    ma = df["close"].rolling(20).mean().iloc[-1]
+    std = df["close"].rolling(20).std().iloc[-1]
+    price = df["close"].iloc[-1]
+    z = (price - ma) / std  # z-score of deviation
+    if z > 1.5:
+        conf = min(1.0, (z - 1.5) / 1.5)
+        return {"action": "SELL", "confidence": conf}
+    elif z < -1.5:
+        conf = min(1.0, (-z - 1.5) / 1.5)
+        return {"action": "BUY", "confidence": conf}
+    else:
+        conf = 1 - abs(z) / 1.5
+        return {"action": "HOLD", "confidence": conf}
 
-        z = (price - ma) / std  # z-score of deviation
-
-        if z > 1.5:
-            conf = min(1.0, (z - 1.5) / 1.5)
-            signal = {"action": "SELL", "confidence": round(conf, 2)}
-        elif z < -1.5:
-            conf = min(1.0, (-z - 1.5) / 1.5)
-            signal = {"action": "BUY", "confidence": round(conf, 2)}
-        else:
-            conf = 1 - abs(z) / 1.5
-            signal = {"action": "HOLD", "confidence": round(conf, 2)}
-        signals[symbol] = signal
-    return signals
+def evaluate(df):
+    strategies = [mean_reversion, momentum]
+    scores = {
+        "BUY": 0.0,
+        "HOLD": 0.0,
+        "SELL": 0.0
+    }
+    votes = []
+    for strategy in strategies:
+        result = strategy(df)
+        action = result["action"]
+        confidence = result["confidence"]
+        scores[action] += confidence
+        votes.append((strategy.__name__, action, confidence))
+    final_action = max(scores, key = scores.get)
+    final_conf = scores[final_action] / len(strategies)
+    return{
+        "action": final_action,
+        "confidence": round(final_conf, 2)
+    }
