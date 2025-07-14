@@ -4,7 +4,7 @@ from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
 from data import fetch_historical_data, fetch_live_data
-from strategy import mean_reversion
+from strategy import evaluate
 from rank import rank
 from risk import calculate_position_size
 from broker import execute
@@ -22,7 +22,11 @@ symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB", "NVDA"] #symbols - trades the
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(liveclient, symbols)
-signals = mean_reversion(historical_data)
+
+signals = {}
+for symbol, df in historical_data.items():
+    result = evaluate(df)
+    signals[symbol] = result
 print(signals)
 ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5)
 print(ranked_signals)
