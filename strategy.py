@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
 from ta.volatility import BollingerBands
-from ta.momentum import KAMAIndicator
+from ta.momentum import KAMAIndicator, RSIIndicator
+from ta.trend import MACD
 
 def momentum(df):
-    momentum = KAMAIndicator(close = df["close"], window = 20)
+    kama = KAMAIndicator(close = df["close"], window = 20).kama().iloc[-1]
+    price = df["close"].iloc[-1]
+    momentum = (price - kama) / kama
 
     if momentum > 0.02:
         conf = min(1.0, momentum / 0.05)  # cap at 100% confidence
@@ -32,8 +35,33 @@ def mean_reversion(df):
     else:
         return {"action": "HOLD", "confidence": 1 - abs(price - mid.iloc[-1]) / mid.iloc[-1]}
 
+def rsi(df):
+    rsi = RSIIndicator(df["close"]).rsi().iloc[-1]
+
+    if rsi < 30:
+        conf = min(1.0, (30 - rsi) / 20)  # max at RSI 10
+        return {"action": "BUY", "confidence": conf}
+    elif rsi > 70:
+        conf = min(1.0, (rsi - 70) / 20)  # max at RSI 90
+        return {"action": "SELL", "confidence": conf}
+    else:
+        conf = 1 - abs(rsi - 50) / 20
+        return {"action": "HOLD", "confidence": conf}
+    
+def macd(df):
+    macd_diff = MACD(df["close"]).macd_diff().iloc[-1]
+
+    if macd_diff > 0:
+        conf = min(1.0, macd_diff / 0.5)
+        return {"action": "BUY", "confidence": conf}
+    elif macd_diff < 0:
+        conf = min(1.0, abs(macd_diff) / 0.5)
+        return {"action": "SELL", "confidence": conf}
+    else:
+        return {"action": "HOLD", "confidence": 0.0}
+
 def evaluate(df):
-    strategies = [momentum, mean_reversion]
+    strategies = [momentum, mean_reversion, rsi, macd]
     scores = {
         "BUY": 0.0,
         "HOLD": 0.0,
@@ -47,7 +75,7 @@ def evaluate(df):
         scores[action] += confidence
         votes.append((strategy.__name__, action, confidence))
     final_action = max(scores, key = scores.get)
-    final_conf = scores[final_action] / len(strategies)
+    final_conf = scores[final_action] / sum(1 for item in votes for val in item if val == final_action)
     return{
         "action": final_action,
         "confidence": round(final_conf, 2)
