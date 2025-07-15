@@ -4,10 +4,9 @@ from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
 from data import fetch_historical_data, fetch_live_data
-from strategy import evaluate, mean_reversion
+from strategy import evaluate, mean_reversion, momentum, rsi, macd
 from rank import rank
 from broker import execute
-import ta
 
 load_dotenv()
 api_key = os.getenv("APCA_API_KEY_ID")
@@ -25,7 +24,7 @@ live_data = fetch_live_data(liveclient, symbols)
 
 signals = {}
 for symbol, df in historical_data.items():
-    result = mean_reversion(df)
+    result = evaluate(df)
     signals[symbol] = result
 print(signals)
 ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5)
