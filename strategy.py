@@ -60,8 +60,22 @@ def macd(df):
     else:
         return {"action": "HOLD", "confidence": 0.0}
 
+def breakout(df):
+    high = df["high"].rolling(20).max().iloc[-1]
+    low = df["low"].rolling(20).min().iloc[-1]
+    price = df["close"].iloc[-1]
+
+    if price >= high:
+        conf = min(1.0, (price - low) / (high - low))
+        return {"action": "BUY", "confidence": conf}
+    elif price <= low:
+        conf = min(1.0, (high - price) / (high - low))
+        return {"action": "SELL", "confidence": conf}
+    else:
+        return {"action": "HOLD", "confidence": 0.5}
+
 def evaluate(df):
-    strategies = [momentum, mean_reversion, rsi, macd]
+    strategies = [momentum, mean_reversion, rsi, macd, breakout]
     scores = {
         "BUY": 0.0,
         "HOLD": 0.0,
