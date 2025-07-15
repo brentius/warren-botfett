@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-import ta
-import random
+from ta.volatility import BollingerBands
+from ta.momentum import KAMAIndicator
 
-#PLANS: use multiple strategies, which strategy used: determine by ranking
 def momentum(df):
-    momentum = (df["close"].iloc[-1] - df["close"].iloc[-10]) / df["close"].iloc[-10]
+    momentum = KAMAIndicator(close = df["close"], window = 20)
+
     if momentum > 0.02:
         conf = min(1.0, momentum / 0.05)  # cap at 100% confidence
         return{"action": "BUY", "confidence": conf}
@@ -17,22 +17,23 @@ def momentum(df):
         return{"action": "HOLD", "confidence": conf}
 
 def mean_reversion(df):
-    ma = df["close"].rolling(20).mean().iloc[-1]
-    std = df["close"].rolling(20).std().iloc[-1]
+    bb = BollingerBands(close = df["close"], window = 20, window_dev = 2)
+    lower = bb.bollinger_lband()
+    upper = bb.bollinger_hband()
+    mid = bb.bollinger_mavg()
     price = df["close"].iloc[-1]
-    z = (price - ma) / std  # z-score of deviation
-    if z > 1.5:
-        conf = min(1.0, (z - 1.5) / 1.5)
-        return {"action": "SELL", "confidence": conf}
-    elif z < -1.5:
-        conf = min(1.0, (-z - 1.5) / 1.5)
-        return {"action": "BUY", "confidence": conf}
+
+    if price < lower.iloc[-1]:
+        distance = (mid.iloc[-1] - price) / mid.iloc[-1]
+        return {"action": "BUY", "confidence": min(distance * 10, 1.0)}
+    elif price > upper.iloc[-1]:
+        distance = (price - mid.iloc[-1]) / mid.iloc[-1]
+        return {"action": "SELL", "confidence": min(distance * 10, 1.0)}
     else:
-        conf = 1 - abs(z) / 1.5
-        return {"action": "HOLD", "confidence": conf}
+        return {"action": "HOLD", "confidence": 1 - abs(price - mid.iloc[-1]) / mid.iloc[-1]}
 
 def evaluate(df):
-    strategies = [mean_reversion, momentum]
+    strategies = [momentum, mean_reversion]
     scores = {
         "BUY": 0.0,
         "HOLD": 0.0,
