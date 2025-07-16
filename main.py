@@ -4,7 +4,7 @@ from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
 from data import fetch_historical_data, fetch_live_data
-from strategy import evaluate, mean_reversion, momentum, rsi, macd
+from strategy import evaluate
 from rank import rank
 from broker import execute
 
@@ -17,7 +17,7 @@ tradeclient = TradingClient(api_key, api_secret, paper = True)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)
 
-symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB", "NVDA"] #symbols - trades these stocks
+symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB", "NVDA", "VKTX", "ORCL", "TGT"] #symbols - trades these stocks
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(liveclient, symbols)
