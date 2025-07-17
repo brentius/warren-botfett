@@ -1,5 +1,6 @@
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
+from ta.volatility import AverageTrueRange
 
 def account_info(client):
     account = client.get_account()
@@ -22,13 +23,25 @@ def open_positions(client):
         for pos in positions
     }
 
-def execute(client, symbol, quantity, order_side):
-    def place_order():
+def execute(tradeclient, dataclient, symbol, order_side, confidence):
+    acc_info = account_info(tradeclient)
+    power = acc_info["buying_power"]
+
+    max_alloc_pct = 0.10
+    alloc = power * max_alloc_pct * confidence
+    price = float(dataclient.get_stock_latest_trade(symbol).price)
+    quantity = int(alloc // price)
+
+    if quantity < 1:
+        print(f"[SKIP] Not enough funds to buy any shares of {symbol}")
+        return None
+    
+    def place_order(quantity):
         order = MarketOrderRequest(
             symbol = symbol,
             qty = quantity,
             side = OrderSide.BUY if order_side == "BUY" else OrderSide.SELL,
             time_in_force = TimeInForce.GTC
         )
-        client.submit_order(order)
-    return place_order()
+        tradeclient.submit_order(order)
+    return place_order(quantity)

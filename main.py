@@ -32,5 +32,10 @@ print(ranked_signals)
 extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
 print(extracted_signals)
 
-#for item in extracted_signals:
-#    execute(tradeclient, symbol = item[0], qty = 0.000001, order_side = item[2])
+for item in extracted_signals:
+    execute(tradeclient = tradeclient,
+            dataclient = dataclient,
+            symbol = item[0],
+            order_side = item[1],
+            confidence = item[2]
+            )
