@@ -3,6 +3,7 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
+import asyncio
 from data import fetch_historical_data, fetch_live_data
 from strategy import evaluate
 from rank import rank
@@ -20,7 +21,15 @@ liveclient = StockDataStream(api_key, api_secret)
 symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB", "NVDA", "VKTX", "ORCL", "TGT"] #symbols - trades these stocks
 
 historical_data = fetch_historical_data(dataclient, symbols)
-live_data = fetch_live_data(liveclient, symbols)
+
+#for symbol in symbols:
+#    liveclient.subscribe_quotes(websocket_live, symbol)
+#    data = liveclient.run()
+#    live_prices.update({symbol:data})
+#print(live_prices)
+
+live_prices = fetch_live_data(dataclient, symbols)
+print(live_prices)
 
 signals = {}
 for symbol, df in historical_data.items():
@@ -33,9 +42,8 @@ extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_
 print(extracted_signals)
 
 for item in extracted_signals:
-    execute(tradeclient = tradeclient,
-            dataclient = dataclient,
-            symbol = item[0],
-            order_side = item[1],
-            confidence = item[2]
-            )
+    if item[1] == "BUY":
+        stockprice = live_prices[1]
+    else:
+        stockprice == live_prices[2]
+    execute(tradeclient, stockprice, item[0], item[1], item[2])

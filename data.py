@@ -1,6 +1,7 @@
 import pandas as pd
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.requests import StockBarsRequest
+from alpaca.data.requests import StockLatestQuoteRequest
 
 def fetch_historical_data(client, symbols):
     request = StockBarsRequest(
@@ -23,10 +24,10 @@ def fetch_historical_data(client, symbols):
     return clean_data(raw_historical_data, symbols)
 
 def fetch_live_data(client, symbols):
-    async def quote_handler(data):
-        print(data)
-    live_data = {}
+    live_prices = []
     for symbol in symbols:
-        data = client.subscribe_quotes(quote_handler, symbol)
-        live_data.update({symbol: data})
-    return live_data
+        request = StockLatestQuoteRequest(symbol_or_symbols = symbol)
+        latest = client.get_stock_latest_quote(request)
+        quote = latest[symbol]
+        live_prices.append((symbol, quote.bid_price, quote.ask_price))
+    return live_prices
