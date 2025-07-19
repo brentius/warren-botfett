@@ -45,4 +45,4 @@ for item in extracted_signals:
     else:
         continue
     execute(tradeclient, stock, stockprice, action, quantity)
-    print(quantity)
+    print(f"{action} {quantity} of {stock} at {stockprice}")
