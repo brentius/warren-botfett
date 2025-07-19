@@ -23,13 +23,12 @@ def open_positions(client):
         for pos in positions
     }
 
-def execute(tradeclient, dataclient, symbol, order_side, confidence):
+def execute(tradeclient, symbol, price, order_side, confidence):
     acc_info = account_info(tradeclient)
     power = acc_info["buying_power"]
 
     max_alloc_pct = 0.10
     alloc = power * max_alloc_pct * confidence
-    price = float(dataclient.get_stock_latest_trade(symbol).price)
     quantity = int(alloc // price)
 
     if quantity < 1:

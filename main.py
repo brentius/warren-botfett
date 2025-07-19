@@ -34,11 +34,15 @@ extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_
 print(extracted_signals)
 
 for item in extracted_signals:
-    stock = item[0]
-    for value in live_data:
-        if stock == value[0]:
-            if item[1] == "BUY":
-                stockprice = value[1]
-            elif item[1] == "SELL":
-                stockprice = value[2]
-            execute(tradeclient, stockprice, item[0], item[1], item[2])
+    stock, action, quantity = item
+    matched = next((v for v in live_data if v[0] == stock), None)
+    if not matched:
+        continue
+    elif action == "BUY":
+        stockprice = matched[1]
+    elif action == "SELL":
+        stockprice = matched[2]
+    else:
+        continue
+    execute(tradeclient, stock, stockprice, action, quantity)
+    print(quantity)
