@@ -1,6 +1,5 @@
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
-from ta.volatility import AverageTrueRange
 
 def account_info(client):
     account = client.get_account()
