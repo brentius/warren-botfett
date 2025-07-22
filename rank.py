@@ -1,4 +1,4 @@
-def rank(signals, top_n, conf_threshold):
+def rank(signals, top_n, conf_threshold, portfolio):
     def rank_buy():
     #remove holds
         filtered_signals = {
@@ -17,6 +17,7 @@ def rank(signals, top_n, conf_threshold):
         #remove holds
         filtered_signals = {
             symbol: signal for symbol, signal in signals.items()
+            if symbol in portfolio
             if signal["action"] == "SELL" and signal["confidence"] >= conf_threshold 
         }
 

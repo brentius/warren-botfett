@@ -6,7 +6,8 @@ import os
 from data import fetch_historical_data, fetch_live_data
 from strategy import evaluate
 from rank import rank
-from broker import execute
+from broker import execute, open_positions
+import logging
 
 load_dotenv()
 api_key = os.getenv("APCA_API_KEY_ID")
@@ -17,7 +18,7 @@ tradeclient = TradingClient(api_key, api_secret, paper = True)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)
 
-symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "RKLB", "NVDA", "VKTX", "ORCL", "TGT"] #symbols - trades these stocks
+symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "NVDA", "VKTX", "ORCL", "TGT"] #symbols - trades these stocks
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
@@ -27,8 +28,7 @@ signals = {}
 for symbol, df in historical_data.items():
     result = evaluate(df)
     signals[symbol] = result
-print(signals)
-ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5)
+ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5, portfolio = open_positions(tradeclient))
 print(ranked_signals)
 extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
 print(extracted_signals)
@@ -44,5 +44,5 @@ for item in extracted_signals:
         stockprice = matched[2]
     else:
         continue
-    execute(tradeclient, stock, stockprice, action, quantity)
+#    execute(tradeclient, stock, stockprice, action, quantity)
     print(f"{action} {quantity} of {stock} at {stockprice}")
