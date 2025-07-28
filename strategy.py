@@ -74,7 +74,7 @@ def breakout(df):
     else:
         return {"action": "HOLD", "confidence": 0.5}
 
-def evaluate(df):
+def strategy(df):
     strategies = [momentum, mean_reversion, rsi, macd, breakout]
     scores = {
         "BUY": 0.0,
