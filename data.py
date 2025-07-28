@@ -8,7 +8,7 @@ def fetch_historical_data(client, symbols):
     request = StockBarsRequest(
         symbol_or_symbols = symbols,
         timeframe = TimeFrame.Day,
-        start = "2025-01-01"
+        start = "2020-01-01"
     )
     raw_historical_data = client.get_stock_bars(request).df
     for symbol in symbols:
