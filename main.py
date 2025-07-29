@@ -24,21 +24,20 @@ backtest = True
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
-def evaluate():
+def evaluate(historical_data):
     signals = {}
     for symbol, df in historical_data.items():
         result = strategy(df)
         signals[symbol] = result
     ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5, portfolio = open_positions(tradeclient))
     extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
-    return extracted_signals, df
+    return extracted_signals
 
 if backtest == True:
-    extracted, df = evaluate()
-    run_backtest(extracted, df, historical_data, 1000)
+    run_backtest(evaluate, historical_data, 1000)
 
 if backtest == False:
-    signals, df = evaluate()
+    signals, df = evaluate(historical_data)
     for item in signals:
         stock, action, quantity = item
         matched = next((v for v in live_data if v[0] == stock), None)
