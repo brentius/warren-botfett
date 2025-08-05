@@ -12,7 +12,7 @@ def momentum(df):
     if momentum > 0.02:
         conf = min(1.0, momentum / 0.05)  # cap at 100% confidence
         return{"action": "BUY", "confidence": conf}
-    elif momentum < -0.02:
+    elif momentum < -0.01:
         conf = min(1.0, abs(momentum) / 0.05)
         return{"action": "SELL", "confidence": conf}
     else:

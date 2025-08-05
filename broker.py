@@ -27,7 +27,10 @@ def execute(tradeclient, symbol, price, order_side, confidence):
     power = acc_info["buying_power"]
 
     max_alloc_pct = 0.10
-    alloc = power * max_alloc_pct * confidence
+    win_ratio = 0.37
+    alloc = confidence - ((1 - confidence)/win_ratio)
+    if alloc > max_alloc_pct:
+        alloc = max_alloc_pct
     quantity = int(alloc // price)
 
     if quantity < 1:

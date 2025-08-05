@@ -1,7 +1,7 @@
-import pandas as pd
 from alpaca.data.timeframe import TimeFrame
-from alpaca.data.requests import StockBarsRequest
-from alpaca.data.requests import StockLatestQuoteRequest
+from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
+from datetime import datetime
+import pandas as pd
 
 def fetch_historical_data(client, symbols):
     history_data = {}
@@ -11,7 +11,10 @@ def fetch_historical_data(client, symbols):
         start = "2020-01-01"
     )
     raw_historical_data = client.get_stock_bars(request).df
+
     for symbol in symbols:
+        if symbol not in raw_historical_data.index.levels[0]:
+            continue
         df = raw_historical_data.loc[symbol].copy()
         df.index = pd.to_datetime(df.index)
 #       df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")

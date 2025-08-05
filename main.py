@@ -18,15 +18,15 @@ tradeclient = TradingClient(api_key, api_secret, paper = True)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)
 
-symbols = ["AAPL", "MSFT", "TSLA", "GOOG", "NVDA", "VKTX", "ORCL", "TGT"] #symbols - trades these stocks
+symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BAC", "GS", "MS", "JNJ", "PFE", "UNH"] #symbols - trades these stocks
 backtest = True
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
-def evaluate(historical_data):
+def evaluate(data):
     signals = {}
-    for symbol, df in historical_data.items():
+    for symbol, df in data.items():
         result = strategy(df)
         signals[symbol] = result
     ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5, portfolio = open_positions(tradeclient))
@@ -34,7 +34,7 @@ def evaluate(historical_data):
     return extracted_signals
 
 if backtest == True:
-    run_backtest(evaluate, historical_data, 1000)
+    run_backtest(evaluate, historical_data, 10000)
 
 if backtest == False:
     signals, df = evaluate(historical_data)
