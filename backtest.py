@@ -28,7 +28,7 @@ def run_backtest(evaluate, historical_data, capital, lookback = 20):
         for stock, action, confidence in extracted:
             price = historical_data[stock].loc[current_date]["close"]
             alloc = capital * 0.1 * confidence
-            quantity = alloc / price
+            quantity = 1
             if action == "BUY":
                 portfolio[stock] = {
                     "buy_price": price,
@@ -41,7 +41,6 @@ def run_backtest(evaluate, historical_data, capital, lookback = 20):
                     "price": price,
                     "quantity": quantity
                 })
-
                 capital -= price * quantity
 
             elif action == "SELL" and stock in portfolio:
@@ -77,7 +76,6 @@ def run_backtest(evaluate, historical_data, capital, lookback = 20):
             "profit": (final_price - info["buy_price"]) * info["quantity"]
         })
         capital += price * info["quantity"]
-        del portfolio[stock]
 
     def compute_metrics(portfolio_df, trades):
             values = portfolio_df["total_value"]

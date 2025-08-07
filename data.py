@@ -8,7 +8,7 @@ def fetch_historical_data(client, symbols):
     request = StockBarsRequest(
         symbol_or_symbols = symbols,
         timeframe = TimeFrame.Day,
-        start = "2020-01-01"
+        start = "2025-01-01"
     )
     raw_historical_data = client.get_stock_bars(request).df
 
@@ -17,9 +17,8 @@ def fetch_historical_data(client, symbols):
             continue
         df = raw_historical_data.loc[symbol].copy()
         df.index = pd.to_datetime(df.index)
-#       df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
         df.sort_index(inplace = True)
-        df.columns = [col.lower() for col in df.columns]
+        df.columns = [col.strip().lower() for col in df.columns]
         df.dropna(subset=['close'], inplace=True)
         history_data[symbol] = df
     return history_data

@@ -4,7 +4,7 @@ from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
 from data import fetch_historical_data, fetch_live_data
-from strategy import strategy
+from test import strategy
 from rank import rank
 from broker import execute, open_positions
 from backtest import run_backtest
