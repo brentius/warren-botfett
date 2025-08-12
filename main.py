@@ -3,51 +3,58 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
+import argparse
+import backtrader as bt
+import backtrader.feeds as btfeeds
+import pandas as pd
 from data import fetch_historical_data, fetch_live_data
-from test import strategy
-from rank import rank
-from broker import execute, open_positions
-from backtest import run_backtest
+from strategy import placeholder
+
+#TO GO LIVE - SET BOTH TO FALSE
+paper = True
+backtest = True
 
 load_dotenv()
-api_key = os.getenv("APCA_API_KEY_ID")
-api_secret = os.getenv("APCA_API_SECRET_KEY")
-base_url = os.getenv("APCA_API_BASE_URL")
+api_key = os.getenv("alpaca_paper_key" if paper == True else "alpaca_live_key")
+api_secret = os.getenv("alpaca_paper_secret" if paper == True else "alpaca_live_secret")
+base_url = os.getenv("alpaca_base_url")
 
-tradeclient = TradingClient(api_key, api_secret, paper = True)
+tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)
 
-symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BAC", "GS", "MS", "JNJ", "PFE", "UNH"] #symbols - trades these stocks
-backtest = True
+symbols = ["AAPL", "MSFT", "NVDA", "GOOG"] #TRADE THESE
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
-def evaluate(data):
-    signals = {}
-    for symbol, df in data.items():
-        result = strategy(df)
-        signals[symbol] = result
-    ranked_signals = rank(signals, top_n = 3, conf_threshold = 0.5, portfolio = open_positions(tradeclient))
-    extracted_signals = [(t[0], t[1]['action'], t[1]['confidence']) for t in ranked_signals]
-    return extracted_signals
+def parse_to_bt(df, datetime_col=None):
+    df_copy = df.copy()
 
-if backtest == True:
-    run_backtest(evaluate, historical_data, 10000)
+    if datetime_col:
+        df_copy[datetime_col] = pd.to_datetime(df_copy[datetime_col])
+        df_copy.set_index(datetime_col, inplace=True)
+    else:
+        if not pd.api.types.is_datetime64_any_dtype(df_copy.index):
+            raise ValueError("DataFrame index must be datetime or specify datetime_col parameter.")
+    df_copy.rename(columns={
+        'open': 'Open',
+        'high': 'High',
+        'low': 'Low',
+        'close': 'Close',
+        'volume': 'Volume'
+    }, inplace=True)
+    df_copy = df_copy[['Open', 'High', 'Low', 'Close', 'Volume']]
+    return bt.feeds.PandasData(dataname = df_copy)
 
-if backtest == False:
-    signals, df = evaluate(historical_data)
-    for item in signals:
-        stock, action, quantity = item
-        matched = next((v for v in live_data if v[0] == stock), None)
-        if not matched:
-            continue
-        elif action == "BUY":
-            stockprice = matched[1]
-        elif action == "SELL":
-            stockprice = matched[2]
-        else:
-            continue
-        execute(tradeclient, stock, stockprice, action, quantity)
-        print(f"{action} {quantity} of {stock} at {stockprice}")
+cerebro = bt.Cerebro()
+
+for stock, df in historical_data.items():
+    data_feed = parse_to_bt(df)
+    cerebro.adddata(data_feed, name = stock)
+
+# Add your strategy here
+cerebro.addstrategy(placeholder)
+
+cerebro.run()
+cerebro.plot()
