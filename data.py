@@ -19,7 +19,7 @@ def fetch_historical_data(client, symbols):
         df.index = pd.to_datetime(df.index)
         df.sort_index(inplace = True)
         df.columns = [col.strip().lower() for col in df.columns]
-        df.dropna(subset=['close'], inplace=True)
+        df.dropna(subset = ['close'], inplace=True)
         history_data[symbol] = df
     return history_data
 
