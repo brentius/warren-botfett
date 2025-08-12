@@ -1,10 +1,10 @@
 import backtrader as bt
 
-class placeholder(bt.Strategy):
+class placeholder(bt.Strategy): #SMA - just a placeholder
     params = (
         ("fast", 12),
         ("slow", 26),
-        ("signal", 9),
+        ("signal", 5),
         ("max_alloc", 0.1),
         ("top_n", 3),
     )
@@ -48,11 +48,12 @@ class placeholder(bt.Strategy):
 
             size = int((self.broker.getvalue() * self.p.max_alloc) / d.close[0])
 
-            if name in top_stocks and signal > 0 and pos == 0:
-                self.buy(data=d, size = size)
-                print(f"{name}: BUY at {d.close[0]}")
+            if name in top_stocks:
+                if signal > 0 and pos == 0:
+                    self.buy(data=d, size = size)
+                    print(f"{name}: BUY at {d.close[0]}")
 
-            # If MACD crosses below signal → Sell
-            elif signal < 0 and pos > 0:
-                self.sell(data=d, size = size)
-                print(f"{name}: SELL at {d.close[0]}")
+                # If MACD crosses below signal → Sell
+                elif signal < 0 and pos > 0:
+                    self.sell(data=d, size = size)
+                    print(f"{name}: SELL at {d.close[0]}")

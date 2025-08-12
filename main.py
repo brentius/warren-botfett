@@ -3,9 +3,7 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.live import StockDataStream
 from dotenv import load_dotenv
 import os
-import argparse
 import backtrader as bt
-import backtrader.feeds as btfeeds
 import pandas as pd
 from data import fetch_historical_data, fetch_live_data
 from strategy import placeholder
@@ -23,7 +21,7 @@ tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)
 
-symbols = ["AAPL", "MSFT", "NVDA", "GOOG"] #TRADE THESE
+symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BA"] #TRADE THESE
 
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
@@ -47,14 +45,25 @@ def parse_to_bt(df, datetime_col=None):
     df_copy = df_copy[['Open', 'High', 'Low', 'Close', 'Volume']]
     return bt.feeds.PandasData(dataname = df_copy)
 
-cerebro = bt.Cerebro()
+if backtest == True:
+    cerebro = bt.Cerebro()
 
-for stock, df in historical_data.items():
-    data_feed = parse_to_bt(df)
-    cerebro.adddata(data_feed, name = stock)
+    for stock, df in historical_data.items():
+        data_feed = parse_to_bt(df)
+        cerebro.adddata(data_feed, name = stock)
 
-# Add your strategy here
-cerebro.addstrategy(placeholder)
+    # Add your strategy here
+    cerebro.addstrategy(placeholder)
 
-cerebro.run()
-cerebro.plot()
+    print(f"Starting Portfolio Value: {cerebro.broker.getvalue():.2f}")
+    cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='sharpe')
+    cerebro.addanalyzer(bt.analyzers.DrawDown, _name='drawdown')
+
+    results = cerebro.run()
+
+    sharpe = results[0].analyzers.sharpe.get_analysis()
+    drawdown = results[0].analyzers.drawdown.get_analysis()
+    print(f"Final Portfolio Value: {cerebro.broker.getvalue():.2f}")
+    print(f"Sharpe Ratio: {sharpe['sharperatio']}")
+    print(f"Max Drawdown: {drawdown['max']['drawdown']:.2f}%")
+    cerebro.plot()

@@ -1,11 +1,11 @@
 # WARREN BOTFETT
 
-A lightweight, modular quantitative trading bot that runs on a Raspberry Pi 5 and uses Alpaca to trade US stocks.
+A lightweight, modular quantitative trading bot that runs on a Raspberry Pi 5 and uses Alpaca and Backtrader to trade US stocks.
 
 ## Features
 
 - Fetches real-time and historical stock data via Alpaca
-- Signal generation with customisable trading strategies
+- Signal + confidence generation with a customisable strategy - just plug and play
 - Backtesting engine to simulate portfolio performance
 - Ranking system to select top tickers from a watchlist
 - Risk management to avoid losing too much capital
@@ -13,13 +13,12 @@ A lightweight, modular quantitative trading bot that runs on a Raspberry Pi 5 an
 
 ## Structure
 
-There are 6 python files in this repo (discounting ```main.py```):
+There are 6 python files in this repo:
 - ```data.py``` fetches historical and live stock data from Alpaca and feeds it into a ```pandas.DataFrame```
-- ```strategy.py``` determines whether to buy, sell or hold a stock given a ```pandas.DataFrame``` of price data
-- ```backtest.py``` runs the strategy on historical data to simulate portfolio performance
-- ```ranking.py``` decides which stocks out of a list are most promising to trade and swaps out the worst-performing stocks
+- ```strategy.py``` determines whether to buy, sell or hold a stock given a ```pandas.DataFrame``` of price data, and selects the top 3 stocks to trade
 - ```broker.py``` places orders with the Alpaca API
 - ```risk.py``` enforces rules to protect capital and limit risk per trade
+- ```main.py``` ties it all together, and allows you to toggle between paper, backtesting or live trading
 
 ## Usage
 
