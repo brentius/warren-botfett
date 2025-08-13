@@ -1,12 +1,12 @@
 from alpaca.trading.client import TradingClient
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.live import StockDataStream
+import alpaca_trade_api as tradeapi
 from dotenv import load_dotenv
 import os
 import backtrader as bt
-import pandas as pd
-from data import fetch_historical_data, fetch_live_data
-from strategy import placeholder
+from data import fetch_historical_data, parse, fetch_live_data
+from strategy import test
 
 #TO GO LIVE - SET BOTH TO FALSE
 paper = True
@@ -26,34 +26,14 @@ symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BA"] #TRADE THESE
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
-def parse_to_bt(df, datetime_col=None):
-    df_copy = df.copy()
-
-    if datetime_col:
-        df_copy[datetime_col] = pd.to_datetime(df_copy[datetime_col])
-        df_copy.set_index(datetime_col, inplace=True)
-    else:
-        if not pd.api.types.is_datetime64_any_dtype(df_copy.index):
-            raise ValueError("DataFrame index must be datetime or specify datetime_col parameter.")
-    df_copy.rename(columns={
-        'open': 'Open',
-        'high': 'High',
-        'low': 'Low',
-        'close': 'Close',
-        'volume': 'Volume'
-    }, inplace=True)
-    df_copy = df_copy[['Open', 'High', 'Low', 'Close', 'Volume']]
-    return bt.feeds.PandasData(dataname = df_copy)
-
 if backtest == True:
     cerebro = bt.Cerebro()
 
     for stock, df in historical_data.items():
-        data_feed = parse_to_bt(df)
+        data_feed = parse(df)
         cerebro.adddata(data_feed, name = stock)
 
-    # Add your strategy here
-    cerebro.addstrategy(placeholder)
+    cerebro.addstrategy(test) #strategy
 
     print(f"Starting Portfolio Value: {cerebro.broker.getvalue():.2f}")
     cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='sharpe')
@@ -67,3 +47,6 @@ if backtest == True:
     print(f"Sharpe Ratio: {sharpe['sharperatio']}")
     print(f"Max Drawdown: {drawdown['max']['drawdown']:.2f}%")
     cerebro.plot()
+
+if backtest == False:
+    for symbol in symbols:

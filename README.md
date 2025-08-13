@@ -17,7 +17,6 @@ There are 6 python files in this repo:
 - ```data.py``` fetches historical and live stock data from Alpaca and feeds it into a ```pandas.DataFrame```
 - ```strategy.py``` determines whether to buy, sell or hold a stock given a ```pandas.DataFrame``` of price data, and selects the top 3 stocks to trade
 - ```broker.py``` places orders with the Alpaca API
-- ```risk.py``` enforces rules to protect capital and limit risk per trade
 - ```main.py``` ties it all together, and allows you to toggle between paper, backtesting or live trading
 
 ## Usage
@@ -38,15 +37,18 @@ pip install -r requirements.txt
 3. Set up your ```.env``` file with Alpaca API keys:
 
 ```env
-APCA_API_KEY_ID = your_api_key_here
-APCA_API_SECRET_KEY = your_secret_key_here
-APCA_API_BASE_URL = https://paper-api.alpaca.markets
+alpaca_paper_key = paper_key_here
+alpaca_paper_secret = paper_secret_here
+alpaca_live_key = live_key_here
+alpaca_live_secret = live_secret_here
+alpaca_base_url = https://paper-api.alpaca.markets/v2
 ```
 
 4. Run it! To backtest a strategy:
 
 ```bash
-python backtest.py
+backtest = True
+python main.py
 ```
 
 To fetch data and check signals:
