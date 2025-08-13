@@ -1,6 +1,6 @@
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.requests import StockLatestQuoteRequest, StockBarsRequest
-from datetime import datetime
+import backtrader as bt
 import pandas as pd
 
 def fetch_historical_data(client, symbols):
@@ -23,6 +23,25 @@ def fetch_historical_data(client, symbols):
         df.dropna(subset = ['close'], inplace=True)
         history_data[symbol] = df
     return history_data
+
+def parse(df, datetime_col=None):
+    df_copy = df.copy()
+
+    if datetime_col:
+        df_copy[datetime_col] = pd.to_datetime(df_copy[datetime_col])
+        df_copy.set_index(datetime_col, inplace=True)
+    else:
+        if not pd.api.types.is_datetime64_any_dtype(df_copy.index):
+            raise ValueError("DataFrame index must be datetime or specify datetime_col parameter.")
+    df_copy.rename(columns={
+        'open': 'Open',
+        'high': 'High',
+        'low': 'Low',
+        'close': 'Close',
+        'volume': 'Volume'
+    }, inplace=True)
+    df_copy = df_copy[['Open', 'High', 'Low', 'Close', 'Volume']]
+    return bt.feeds.PandasData(dataname = df_copy)
 
 def fetch_live_data(client, symbols):
     live_prices = []
