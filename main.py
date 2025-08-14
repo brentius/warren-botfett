@@ -1,16 +1,17 @@
 from alpaca.trading.client import TradingClient
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.live import StockDataStream
-import alpaca_trade_api as tradeapi
+from alpaca.trading.requests import MarketOrderRequest
+from alpaca.trading.enums import OrderSide, TimeInForce
 from dotenv import load_dotenv
 import os
 import backtrader as bt
 from data import fetch_historical_data, parse, fetch_live_data
-from strategy import test
+from strategy import strategy, test
 
 #TO GO LIVE - SET BOTH TO FALSE
 paper = True
-backtest = True
+backtest = False
 
 load_dotenv()
 api_key = os.getenv("alpaca_paper_key" if paper == True else "alpaca_live_key")
@@ -28,7 +29,6 @@ live_data = fetch_live_data(dataclient, symbols)
 
 if backtest == True:
     cerebro = bt.Cerebro()
-
     for stock, df in historical_data.items():
         data_feed = parse(df)
         cerebro.adddata(data_feed, name = stock)
@@ -48,5 +48,35 @@ if backtest == True:
     print(f"Max Drawdown: {drawdown['max']['drawdown']:.2f}%")
     cerebro.plot()
 
-if backtest == False:
-    for symbol in symbols:
+elif backtest == False:
+    live_strategy = strategy()
+    account_value = float(tradeclient.get_account().equity)
+    close_data = {sym: df["close"] for sym, df in historical_data.items()}
+    results = live_strategy.evaluate(close_data, account_value)
+
+    for sym, info in results.items():
+        if "size" in info:
+            try:
+                pos = tradeclient.get_position(sym)
+                current_qty = int(pos.qty)
+            except:
+                current_qty = 0
+
+            if info["signal"] == 1 and current_qty == 0:
+                print(f"BUY {info['size']} {sym}")
+                order = MarketOrderRequest(
+                    symbol=sym,
+                    qty=info["size"],
+                    side=OrderSide.BUY,
+                    time_in_force=TimeInForce.DAY
+                )
+                tradeclient.submit_order(order)
+            elif info["signal"] == -1 and current_qty > 0:
+                print(f"SELL {current_qty} {sym}")
+                order = MarketOrderRequest(
+                    symbol=sym,
+                    qty=current_qty,
+                    side=OrderSide.SELL,
+                    time_in_force=TimeInForce.DAY
+                )
+                tradeclient.submit_order(order)
