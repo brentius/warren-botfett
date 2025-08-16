@@ -9,9 +9,10 @@ import backtrader as bt
 from data import fetch_historical_data, parse, fetch_live_data
 from strategy import strategy, test
 
-#TO GO LIVE - SET BOTH TO FALSE
+#TO GO LIVE - SET ALL TO FALSE
 paper = True
-backtest = False
+backtest = True
+opt = False
 
 load_dotenv()
 api_key = os.getenv("alpaca_paper_key" if paper == True else "alpaca_live_key")
@@ -27,14 +28,19 @@ symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BA"] #TRADE THESE
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
-if backtest == True:
-    cerebro = bt.Cerebro()
-    for stock, df in historical_data.items():
-        data_feed = parse(df)
-        cerebro.adddata(data_feed, name = stock)
+cerebro = bt.Cerebro()
+for i, (stock, df) in enumerate(historical_data.items()):
+    data_feed = parse(df)
+    cerebro.adddata(data_feed, name = stock)
+    if i == 0:
+        master_feed = data_feed  # first feed = master
+    else:
+        data_feed.plotinfo.plotmaster = master_feed
+        data_feed.plotinfo.sameaxis = True
 
-    cerebro.addstrategy(test) #strategy
+cerebro.addstrategy(test) #strategy
 
+if backtest == True and opt == False:
     print(f"Starting Portfolio Value: {cerebro.broker.getvalue():.2f}")
     cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='sharpe')
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name='drawdown')
@@ -48,7 +54,7 @@ if backtest == True:
     print(f"Max Drawdown: {drawdown['max']['drawdown']:.2f}%")
     cerebro.plot()
 
-elif backtest == False:
+elif backtest == False and opt == False:
     live_strategy = strategy()
     account_value = float(tradeclient.get_account().equity)
     close_data = {sym: df["close"] for sym, df in historical_data.items()}
@@ -80,3 +86,14 @@ elif backtest == False:
                     time_in_force=TimeInForce.DAY
                 )
                 tradeclient.submit_order(order)
+
+elif opt == True:
+    cerebro.optstrategy(
+        test,
+        fast=range(10, 20),  # MACD fast period from 10 to 19
+        slow=range(20, 40),  # slow period from 20 to 39
+        signal=range(5, 10)
+    )
+    results = cerebro.run(maxcpus=1)
+    for strat in results:
+        print(f'Params: fast={strat.params.fast}, slow={strat.params.slow}, Sharpe={strat.analyzers.sharpe.get_analysis()}')
