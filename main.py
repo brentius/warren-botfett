@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import backtrader as bt
 from data import fetch_historical_data, parse, fetch_live_data
-from strategy import strategy, test
+from strategy import strategy, interface
 
 #TO GO LIVE - SET ALL TO FALSE
 paper = True
@@ -38,7 +38,7 @@ for i, (stock, df) in enumerate(historical_data.items()):
         data_feed.plotinfo.plotmaster = master_feed
         data_feed.plotinfo.sameaxis = True
 
-cerebro.addstrategy(test) #strategy
+cerebro.addstrategy(interface) #strategy
 
 if backtest == True and opt == False:
     print(f"Starting Portfolio Value: {cerebro.broker.getvalue():.2f}")
