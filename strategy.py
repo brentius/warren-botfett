@@ -21,19 +21,9 @@ class markov:
                     states.append("stable")
             
             df = df.iloc[1:]
-            df["state"] = states
-
 
 class temp:
     def __init__(self, diff=1.0, max_alloc=0.1, top_n=3, window=250, laplace=1.0, horizon=1):
-        """
-        diff: absolute price threshold to classify states
-        max_alloc: max fraction of portfolio per position
-        top_n: number of symbols to trade at once (by confidence)
-        window: rolling window size for state history
-        laplace: smoothing to avoid zero probabilities
-        horizon: prediction steps ahead (default = 1 day)
-        """
         self.diff = diff
         self.max_alloc = max_alloc
         self.top_n = top_n

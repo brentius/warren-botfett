@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import backtrader as bt
 from data import fetch_historical_data, parse, fetch_live_data
-from strategy import strategy, interface
+from strategy import markov, interface
 
 #TO GO LIVE - SET ALL TO FALSE
 paper = True
@@ -55,7 +55,7 @@ if backtest == True and opt == False:
     cerebro.plot()
 
 elif backtest == False and opt == False:
-    live_strategy = strategy()
+    live_strategy = markov()
     account_value = float(tradeclient.get_account().equity)
     close_data = {sym: df["close"] for sym, df in historical_data.items()}
     results = live_strategy.evaluate(close_data, account_value)
@@ -89,7 +89,7 @@ elif backtest == False and opt == False:
 
 elif opt == True:
     cerebro.optstrategy(
-        test,
+        markov,
         fast=range(10, 20),  # MACD fast period from 10 to 19
         slow=range(20, 40),  # slow period from 20 to 39
         signal=range(5, 10)
