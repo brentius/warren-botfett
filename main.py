@@ -7,11 +7,7 @@ from dotenv import load_dotenv
 import os
 import backtrader as bt
 from data import fetch_historical_data, parse, fetch_live_data
-<<<<<<< HEAD
-from strategy import markov, interface
-=======
-from strategy import markov, temp, interface
->>>>>>> 38b995c9a8d2c1b871493f5389ff48870cf35513
+from strategy import temp, interface
 
 #TO GO LIVE - SET ALL TO FALSE
 paper = True
@@ -59,11 +55,7 @@ if backtest == True and opt == False:
     cerebro.plot()
 
 elif backtest == False and opt == False:
-<<<<<<< HEAD
-    live_strategy = markov()
-=======
     live_strategy = temp()
->>>>>>> 38b995c9a8d2c1b871493f5389ff48870cf35513
     account_value = float(tradeclient.get_account().equity)
     close_data = {sym: df["close"] for sym, df in historical_data.items()}
     results = live_strategy.evaluate(close_data, account_value)
@@ -94,18 +86,3 @@ elif backtest == False and opt == False:
                     time_in_force=TimeInForce.DAY
                 )
                 tradeclient.submit_order(order)
-
-elif opt == True:
-    cerebro.optstrategy(
-<<<<<<< HEAD
-        markov,
-=======
-        interface,
->>>>>>> 38b995c9a8d2c1b871493f5389ff48870cf35513
-        fast=range(10, 20),  # MACD fast period from 10 to 19
-        slow=range(20, 40),  # slow period from 20 to 39
-        signal=range(5, 10)
-    )
-    results = cerebro.run(maxcpus=1)
-    for strat in results:
-        print(f'Params: fast={strat.params.fast}, slow={strat.params.slow}, Sharpe={strat.analyzers.sharpe.get_analysis()}')
