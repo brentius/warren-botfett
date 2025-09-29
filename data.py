@@ -32,7 +32,7 @@ def parse(df, datetime_col=None):
         df_copy.set_index(datetime_col, inplace=True)
     else:
         if not pd.api.types.is_datetime64_any_dtype(df_copy.index):
-            raise ValueError("DataFrame index must be datetime or specify datetime_col parameter.")
+            raise ValueError("oopsie wrong datetime format")
     df_copy.rename(columns={
         'open': 'Open',
         'high': 'High',
@@ -51,3 +51,7 @@ def fetch_live_data(client, symbols):
         quote = latest[symbol]
         live_prices.append((symbol, quote.bid_price, quote.ask_price))
     return live_prices
+
+def save_to_csv(history_data):
+    for stock, df in history_data.items():
+        df.to_csv(f"{stock}.csv", header = False, index = False)
