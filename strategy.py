@@ -2,13 +2,6 @@ import backtrader as bt
 import pandas as pd
 import numpy as np
 
-class hidden_markov():
-    def __init__(self, state):
-        self.state = state
-    
-    def evaluate(self, data,):
-
-
 class interface(bt.Strategy):
     params = (
         ("diff", 1),

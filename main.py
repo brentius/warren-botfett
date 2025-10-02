@@ -21,7 +21,7 @@ base_url = os.getenv("alpaca_base_url")
 
 tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
-liveclient = StockDataStream(api_key, api_secret)
+liveclient = StockDataStream(api_key, api_secret)   
 
 symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BA"] #TRADE THESE
 
