@@ -24,7 +24,7 @@ dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)   
 
 symbols = ["AAPL", "MSFT", "NVDA", "GOOG", "JPM", "BA"] #TRADE THESE
-
+    
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
