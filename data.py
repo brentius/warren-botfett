@@ -21,7 +21,7 @@ def fetch_historical_data(client, symbols):
         df.sort_index(inplace = True)
         df.columns = [col.strip().lower() for col in df.columns]
         df.dropna(subset = ['close'], inplace=True)
-        history_data[symbol] = df
+        history_data[symbol] = df.astype("float32")
     return history_data
 
 def parse(df, datetime_col=None):
