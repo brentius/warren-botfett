@@ -2,6 +2,8 @@ import backtrader as bt
 import pandas as pd
 import numpy as np
 
+class HiddenMarkov(self, )
+
 class interface(bt.Strategy):
     params = (
         ("diff", 1),
@@ -10,7 +12,7 @@ class interface(bt.Strategy):
     )
 
     def __init__(self):
-        self.strategy = hidden_markov(
+        self.strategy = HiddenMarkov(
             diff=self.p.diff,
             max_alloc=self.p.max_alloc,
             top_n=self.p.top_n
