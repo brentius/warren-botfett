@@ -1,8 +1,5 @@
 import yfinance as yf
-import pandas as pd
-import matplotlib
 
-ftse = yf.Ticker("^FTSE")
-data = yf.download("^FTSE", start="2015-01-01", end="2025-01-01")
-
-plot = pd.DataFrame.plot(data)
+ftse = yf.Ticker("FTSE^")
+ftse_historical = ftse.history(start = "2025-01-01", end = "2025-10-11", interval = "1d")
+print(ftse_historical)
