@@ -1,8 +1,15 @@
 import backtrader as bt
 import pandas as pd
 import numpy as np
+from hmmlearn import GaussianHMM
 
-class HiddenMarkov(self, )
+class HiddenMarkov:
+    def __init__(self, states = 3, random_state = 42, cost = 0):
+        self.states = states
+        self.random_state = random_state
+        self.cost = cost
+        self.model = GaussianHMM(n_components = states, covariance_type = "full", n_iter = "200", random_state = random_state)
+
 
 class interface(bt.Strategy):
     params = (

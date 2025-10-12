@@ -26,7 +26,6 @@ def fetch_historical_data(client, symbols):
 
 def parse(df, datetime_col=None):
     df_copy = df.copy()
-
     if datetime_col:
         df_copy[datetime_col] = pd.to_datetime(df_copy[datetime_col])
         df_copy.set_index(datetime_col, inplace=True)
@@ -52,6 +51,6 @@ def fetch_live_data(client, symbols):
         live_prices.append((symbol, quote.bid_price, quote.ask_price))
     return live_prices
 
-def save_to_csv(history_data):
+def save(history_data):
     for stock, df in history_data.items():
         df.to_csv(f"{stock}.csv", header = False, index = False)

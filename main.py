@@ -55,7 +55,7 @@ if backtest == True and opt == False:
     cerebro.plot()
 
 elif backtest == False and opt == False:
-    live_strategy = temp()
+    live_strategy = temp() #SWITCH TO NAME OF REAL STRATEGY
     account_value = float(tradeclient.get_account().equity)
     close_data = {sym: df["close"] for sym, df in historical_data.items()}
     results = live_strategy.evaluate(close_data, account_value)
