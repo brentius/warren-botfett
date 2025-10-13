@@ -22,16 +22,17 @@ tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)   
 
-symbols = ["SPY"]
+symbols = ["AAPL", "TSLA"]
     
 historical_data = fetch_historical_data(dataclient, symbols)
 live_data = fetch_live_data(dataclient, symbols)
 
-model, states, data = HiddenMarkov(historical_data)
+for stock, df in historical_data.items():
+    model, states, data = HiddenMarkov(df)
 
-fig, ax = plt.subplots()
-ax.plot(model.lambdas_[states], ".-", ms=6, mfc="orange")
-ax.plot(data)
-ax.set_title('States compared to generated')
-ax.set_xlabel('State')
-plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(model.means_[states], ".-", ms=6, mfc="orange")
+    ax.plot(data)
+    ax.set_title(f'{stock}')
+    ax.set_xlabel('State')
+    plt.show()
