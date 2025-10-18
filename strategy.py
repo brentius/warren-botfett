@@ -8,7 +8,7 @@ def HiddenMarkov(df):
 
     scores = list()
     models = list()
-    for n_components in range(1, 10):
+    for n_components in range(1, 5):
         for idx in range(10):
             model = hmm.GaussianHMM(n_components=n_components, random_state=idx, n_iter=10)
             model.fit(data[:, None])
@@ -20,3 +20,22 @@ def HiddenMarkov(df):
     print(f"Best score: {max(scores)} and {model.n_components} components")
     states = model.predict(data[:, None])
     return model, states, data
+
+class placeholder(bt.Strategy):
+    params = dict(
+        pfast=10,
+        pslow=30
+    )
+
+    def __init__(self):
+        sma1=bt.ind.SMA(period=self.p.pfast)
+        sma2=bt.ind.SMA(period=self.p.pslow)
+        self.crossover=bt.ind.CrossOver(sma1, sma2)
+
+    def next(self):
+        if not self.position:
+            if self.crossover > 0:
+                self.buy()
+        
+        elif self.crossover < 0:
+            self.close()
