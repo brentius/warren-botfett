@@ -10,7 +10,7 @@ import os
 import backtrader as bt
 
 from data import fetch_historical_data, parse, fetch_live_data
-from strategy import HiddenMarkov, placeholder
+from strategy import placeholder
 
 #TO GO LIVE - SET ALL TO FALSE
 paper = True
@@ -24,25 +24,10 @@ tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)   
 
-symbols = ["AAPL"]
+symbols = ["NVDA", "AAPL"]
 
 historical_data = fetch_historical_data(dataclient, symbols)
+print(historical_data)
 live_data = fetch_live_data(dataclient, symbols)
 cerebro = bt.Cerebro()
 
-for i, (stock, df) in enumerate(historical_data.items()):
-    data_feed = parse(df)
-    cerebro.adddata(data_feed, name = stock)
-    if i == 0:
-        master_feed = data_feed
-    else:
-        data_feed.plotinfo.plotmaster = master_feed
-        data_feed.plotinfo.sameaxis = True
-
-cerebro.addstrategy(placeholder)
-
-if backtest == True:
-    print(f"Starting portfolio value: {round(cerebro.broker.getvalue(), 2)}")
-    results = cerebro.run()
-    print(f"Final Portfolio Value: {cerebro.broker.getvalue():.2f}")
-    cerebro.plot()
