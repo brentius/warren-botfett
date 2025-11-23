@@ -10,7 +10,7 @@ import os
 import backtrader as bt
 
 from data import fetch_historical_data, parse, fetch_live_data
-from strategy import placeholder
+from strategy import HiddenMarkov
 
 #TO GO LIVE - SET ALL TO FALSE
 paper = True
@@ -24,10 +24,12 @@ tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)   
 
-symbols = ["NVDA", "AAPL"]
+symbols = ["AAPL"]
 
-historical_data = fetch_historical_data(dataclient, symbols)
-print(historical_data)
+historical_data = fetch_historical_data(dataclient, symbols) #change to CSV when final implementation
 live_data = fetch_live_data(dataclient, symbols)
 cerebro = bt.Cerebro()
+
+for symbol, df in historical_data.items():
+    HiddenMarkov(df)
 
