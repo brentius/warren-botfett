@@ -36,27 +36,8 @@ def HiddenMarkov(df):
         return stats
     
     stats = describe_states(model, states, returns)
+    
     for s in stats:
         print(s)
-
-    return model, states, data
-
-
-class exampleStrategy(bt.Strategy):
-    params = dict(
-        pfast=10,
-        pslow=30
-    )
-
-    def __init__(self):
-        sma1=bt.ind.SMA(period=self.p.pfast)
-        sma2=bt.ind.SMA(period=self.p.pslow)
-        self.crossover=bt.ind.CrossOver(sma1, sma2)
-
-    def next(self):
-        if not self.position:
-            if self.crossover > 0:
-                self.buy()
         
-        elif self.crossover < 0:
-            self.close()
+    return model, states, data
