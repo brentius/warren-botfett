@@ -11,7 +11,7 @@ import backtrader as bt
 import numpy as np
 
 from data import fetch_historical_data, parse, fetch_live_data
-from strategy import HiddenMarkov
+from markov import HiddenMarkov
 
 #TO GO LIVE - SET ALL TO FALSE
 paper = True
@@ -25,7 +25,7 @@ tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)   
 
-symbols = ["MSFT"]
+symbols = ["ORCL", "TSLA"]
 
 historical_data = fetch_historical_data(dataclient, symbols) #change to CSV when final implementation
 live_data = fetch_live_data(dataclient, symbols)
@@ -55,6 +55,6 @@ def plot_states(price, states):
     plt.show()
 
 for symbol, df in historical_data.items():
-    model, states, data = HiddenMarkov(df)
+    model, states, regimes = HiddenMarkov(df)
     price = df["close"].to_numpy()
     plot_states(price[1:], states)

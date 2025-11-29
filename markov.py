@@ -34,9 +34,16 @@ def HiddenMarkov(df):
         return stats
     
     stats = describe_states(model, states, returns)
-    
-    for s in stats:
-        print(s)
-    
-    return model, states, data, stats
 
+    def apply_state(stats):
+        for s in stats:
+            s["sharpe"] = s["mean_ret"] / s["vol"]
+        ranked_by_sharpe = sorted(stats, key=lambda x: x['sharpe'], reverse=True)
+        return ranked_by_sharpe
+    
+    regimes = apply_state(stats)
+
+    for item in regimes:
+        print(item)
+    
+    return model, states, regimes

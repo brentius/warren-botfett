@@ -61,5 +61,6 @@ python strategy.py
 - Python 3.x or above
 
 ## To do:
-- [ ] Implement Recurrent Sticky Hierarchical Dierchlet Process Hidden Markov model (RS-HDP-HMM) for regime detection (bull/bear/sideways)
+- [v] Implement Hidden Markov model (RS-HDP-HMM) for regime detection (bull/bear/sideways)
 - [ ] Stochastic calculus for position sizing and buy/hold/sell signals - stocks will be selected via confidence
+- [v] Assigning regimes to HMM states
