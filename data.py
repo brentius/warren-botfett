@@ -31,7 +31,7 @@ def parse(df, datetime_col=None):
         df_copy.set_index(datetime_col, inplace=True)
     else:
         if not pd.api.types.is_datetime64_any_dtype(df_copy.index):
-            raise ValueError("oopsie wrong datetime format")
+            raise ValueError("oupsie wrong datetime format :3 uwu")
     df_copy.rename(columns={
         'open': 'Open',
         'high': 'High',
