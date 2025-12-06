@@ -17,7 +17,7 @@ def HiddenMarkov(df):
             print(f"Converged: {model.monitor_.converged}, Score: {scores[-1]}")
 
     model = models[np.argmax(scores)]
-    print(f"Best score: {max(scores)} and {model.n_components} components")
+    print(f"Best: {max(scores)}, {model.n_components} components")
     states = model.predict(data)
 
     def describe_states(model, states, returns):
@@ -30,20 +30,15 @@ def HiddenMarkov(df):
                 "mean_ret": np.mean(r),
                 "vol": np.std(r),
                 "freq": np.sum(idx),
+                "sharpe": np.mean(r)/np.std(r),
             })
-        return stats
-    
+            stats = sorted(stats, key=lambda x: x['sharpe'], reverse=True)
+            probs = model.predict_proba(data.reshape(-1,1))
+        return stats, probs
+
     stats = describe_states(model, states, returns)
 
-    def apply_state(stats):
-        for s in stats:
-            s["sharpe"] = s["mean_ret"] / s["vol"]
-        ranked_by_sharpe = sorted(stats, key=lambda x: x['sharpe'], reverse=True)
-        return ranked_by_sharpe
-    
-    regimes = apply_state(stats)
-
-    for item in regimes:
+    for item in stats:
         print(item)
     
-    return model, states, regimes
+    return model, states, stats

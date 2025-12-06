@@ -40,7 +40,6 @@ alpaca_paper_key = paper_key_here
 alpaca_paper_secret = paper_secret_here
 alpaca_live_key = live_key_here
 alpaca_live_secret = live_secret_here
-alpaca_base_url = https://paper-api.alpaca.markets/v2
 ```
 
 4. Run it! To backtest a strategy:
@@ -61,6 +60,4 @@ python strategy.py
 - Python 3.x or above
 
 ## To do:
-- [v] Implement Hidden Markov model (RS-HDP-HMM) for regime detection (bull/bear/sideways)
 - [ ] Stochastic calculus for position sizing and buy/hold/sell signals - stocks will be selected via confidence
-- [v] Assigning regimes to HMM states

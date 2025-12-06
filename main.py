@@ -10,6 +10,9 @@ import os
 import backtrader as bt
 import numpy as np
 
+#import seaborn as sns
+#from qbstyles import mpl_style
+
 from data import fetch_historical_data, parse, fetch_live_data
 from markov import HiddenMarkov
 
@@ -25,7 +28,7 @@ tradeclient = TradingClient(api_key, api_secret, paper = paper)
 dataclient = StockHistoricalDataClient(api_key, api_secret)
 liveclient = StockDataStream(api_key, api_secret)   
 
-symbols = ["ORCL", "TSLA"]
+symbols = ["AAPL"]
 
 historical_data = fetch_historical_data(dataclient, symbols) #change to CSV when final implementation
 live_data = fetch_live_data(dataclient, symbols)
@@ -33,11 +36,8 @@ cerebro = bt.Cerebro()
 
 def plot_states(price, states):
     plt.figure(figsize=(14,6))
-
-    # Plot the price
     plt.plot(price, label="Price", linewidth=1.3)
 
-    # Overlay states (each state gets its own color band)
     for state in np.unique(states):
         mask = states == state
         plt.scatter(
@@ -47,7 +47,8 @@ def plot_states(price, states):
             label=f"State {state}"
         )
 
-    plt.title("Price vs Hidden Markov States")
+    plt.title("Price vs HMM States")
+    plt.style.use('dark_background')
     plt.xlabel("Time")
     plt.ylabel("Price")
     plt.legend()
@@ -55,6 +56,7 @@ def plot_states(price, states):
     plt.show()
 
 for symbol, df in historical_data.items():
-    model, states, regimes = HiddenMarkov(df)
+    model, states, stats = HiddenMarkov(df)
     price = df["close"].to_numpy()
+#    mpl_style(dark=True)
     plot_states(price[1:], states)
