@@ -3,8 +3,6 @@ inputs: discord token, allowed id, inbound messages
 outputs: commands, push messages
 '''
 
-# This example requires the 'message_content' intent.
-
 import discord
 import os
 from dotenv import load_dotenv
@@ -22,14 +20,14 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f"Logged in as {client.user}")
 
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('hello'):
-        await message.channel.send('Hello!')
+    if message.content.startswith("testing"):
+        await message.channel.send(f"I am {client.user}")
 
 client.run(BOT_TOKEN)
