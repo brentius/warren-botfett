@@ -6,16 +6,16 @@ A systematic, event-driven algorithmic trading bot designed to run on a Raspberr
 
 ## Overview
 
-This is NOT a latency-arbitrage machine. It is a strategy-driven system that generates signals from a strategy that you bring yourself, passes them through a risk layer, and executes via Alpaca, with full monitoring, structured logging, and a Discord command interface for remote control.
+Warren Botfett is NOT a latency arbitrage machine. IT IS DESIGNED TO RUN ON A RASPBERRY PI. And to keep expectations in check, you will NOT be beating Citibank or Jane Street with this. It is simply strategy-driven system that generates signals from a strategy that you bring yourself, passes them through a risk layer, and executes via Alpaca, with full monitoring, structured logging, and a Discord command interface for remote control.
 
-It is designed to run headlessly on a Pi 5, survive reboots, and be observable and controllable entirely from Discord.
+It's also designed to run headlessly on a Pi 5, survive reboots, and be observable and controllable entirely from Discord.
 
 ---
 
 ## Architecture
 
 ```
-trading-bot/
+warren-botfett/
 ├── config/
 │   ├── settings.py          # Global settings (API keys, timeouts, env vars)
 │   ├── stocks.yaml          # Watchlist, symbols, per-stock parameters
@@ -24,16 +24,13 @@ trading-bot/
 ├── data/
 │   ├── fetcher.py           # Market data ingestion (REST + WebSocket)
 │   ├── normalizer.py        # Cleaning, resampling, aligning OHLCV data
-│   └── cache.py             # Redis / local caching layer
+│   └── cache.py             # Saves OHLCV data to local machine to prevent repeated API calls
 │
 ├── strategies/
-│   ├── base.py              # Abstract Strategy class (interface contract)
-│   ├── momentum.py          # Momentum / trend-following logic
-│   ├── mean_reversion.py    # Mean reversion logic
-│   └── ml_model.py          # ML-based signal generation (optional)
+│   ├── strategy.py          # BRING YOUR OWN STRATEGY
 │
 ├── signals/
-│   ├── generator.py         # Combines strategy outputs → unified signal
+│   ├── generator.py         # Combines strategy outputs to a unified signal
 │   └── filters.py           # Signal filters (volatility gate, news filter, etc.)
 │
 ├── risk/
@@ -42,7 +39,7 @@ trading-bot/
 │   └── stop_loss.py         # Trailing stops, hard stops, drawdown limits
 │
 ├── execution/
-│   ├── broker.py            # Broker API abstraction (Alpaca, IBKR, etc.)
+│   ├── broker.py            # Alpaca Broker API abstraction
 │   ├── order_manager.py     # Order lifecycle: submit, track, cancel, fill
 │   └── slippage.py          # Execution quality tracking
 │
@@ -66,11 +63,10 @@ trading-bot/
 │   ├── test_risk.py
 │   └── test_execution.py
 │
-├── notebooks/               # Research and strategy prototyping (Jupyter)
-├── main.py                  # Entry point — orchestrates the full loop
-├── scheduler.py             # Cron-style job runner (market open/close hooks)
+├── notebooks/
+├── main.py
 ├── requirements.txt
-├── .env                     # Secrets — never commit this
+├── .env
 └── README.md
 ```
 
@@ -119,15 +115,15 @@ The bot is controllable via a Discord bot running as a separate systemd service.
 | Command | Description |
 |---|---|
 | `!status` | Current positions, P&L, open orders, bot health |
-| `!halt` | Triggers the circuit breaker — stops all activity |
-| `!pause` | Stops new signals; holds existing positions |
-| `!resume` | Resumes signal generation after a pause |
+| `!kill` | Triggers the circuit breaker — stops all activity |
+| `!stop` | Stops new signals; holds existing positions |
+| `!start` | Resumes signal generation after a pause |
 | `!positions` | Detailed breakdown of current holdings |
 | `!metrics` | Session Sharpe, drawdown, win rate |
 | `!logs [n]` | Tail the last n log lines |
 | `!setparam [strategy] [key] [value]` | Adjust a strategy parameter live |
 
-`!halt` and `!pause` route through the same circuit breaker path as `stop_loss.py` — they never bypass the risk layer.
+`!kill` and `!stop` route through the same circuit breaker path as `stop_loss.py` — they never bypass the risk layer.
 
 ---
 
@@ -136,7 +132,7 @@ The bot is controllable via a Discord bot running as a separate systemd service.
 - Raspberry Pi 5 (4GB RAM minimum recommended)
 - Python 3.11+
 - Redis (optional — falls back to in-memory cache)
-- A supported broker account (Alpaca recommended for getting started)
+- Alpaca API account
 - A Discord bot token and server
 
 ---
@@ -164,13 +160,15 @@ nano .env
 
 ## Configuration
 
-All configuration lives in `config/`. You should not need to touch application code to adjust trading behaviour.
+All configuration lives in `config/`. Apart from this, the only code you really *should* touch is in `strategy/`.
 
-**`config/settings.py`** — Alpaca credentials (loaded from `.env`), timeouts, log rotation policy, max position size, drawdown limit, Discord allowlist.
+**`config/settings.py`** — General settings for Botfett
 
 **`config/stocks.yaml`** — your watchlist and any per-symbol parameter overrides.
 
 **`config/strategies.yaml`** — indicator lookback windows, signal thresholds, and strategy weights used by `generator.py`.
+
+Also PLEASE create a **`.env`** to store your API keys and secrets in.
 
 ---
 
@@ -243,4 +241,4 @@ Alerts fire via Discord when any configured threshold is breached. Alert thresho
 
 ## Disclaimer
 
-This software is for educational and research purposes. It is not financial advice. Algorithmic trading involves substantial risk of loss. You are solely responsible for any trading decisions made using this system.
+Warren Botfett is PURELY for educational/research purposes - it is NOT financial advice!!!!!!! Algotrading involves substantial risk of loss. If you use Botfett and end up losing a lot of money - that's your problem.
