@@ -1,12 +1,12 @@
 # WARREN BOTFETT
 
-A systematic, event-driven algorithmic trading bot designed to run on a Raspberry Pi 5 and to use the Alpaca API. Combines multi-strategy signal generation, layered risk management, and remote control via Discord — all within a modular architecture built for reliability over uptime-sensitive hardware.
+A systematic, event-driven algorithmic trading bot designed to run on a Raspberry Pi 5 and to use the Alpaca API. Botfett combines multi-strategy signal generation, layered risk management, and remote control via Discord, all within a modular architecture built for reliability over uptime-sensitive hardware.
 
 ---
 
 ## Overview
 
-This is NOT a latency-arbitrage machine. It is a strategy-driven system that generates signals from technical and (optionally) ML-based analysis, passes them through a risk layer, and executes via a broker abstraction — with full monitoring, structured logging, and a Discord command interface for remote control.
+This is NOT a latency-arbitrage machine. It is a strategy-driven system that generates signals from a strategy that you bring yourself, passes them through a risk layer, and executes via Alpaca, with full monitoring, structured logging, and a Discord command interface for remote control.
 
 It is designed to run headlessly on a Pi 5, survive reboots, and be observable and controllable entirely from Discord.
 
@@ -235,43 +235,9 @@ Alerts fire via Discord when any configured threshold is breached. Alert thresho
 
 ---
 
-## Raspberry Pi Notes
-
-The Pi 5 is capable hardware for this workload, but a few things deserve attention:
-
-**Thermal management.** Sustained CPU load during market hours will cause throttling without adequate cooling. A heatsink + fan case is strongly recommended. The bot logs Pi CPU temperature via `alerts.py` and fires an alert above the configured threshold.
-
-**Power loss.** `order_manager.py` persists state to disk and reconciles against the broker's actual open orders on startup. A clean shutdown hook is registered in `main.py`. An uninterruptible power supply (UPS HAT) is recommended for live trading.
-
-**Storage.** Use a quality A2-rated SD card or, preferably, boot from USB SSD. SD cards under continuous write load fail. Log rotation is aggressive by default to limit writes.
-
-**Dependencies.** Keep the live trading path dependency-light. Do not import PyTorch or heavy ML libraries in the main loop — use ONNX Runtime for inference if `ml_model.py` is active.
-
----
-
-## Safety
-
-- **Never commit `.env`** — it is in `.gitignore` by default.
-- The Discord command allowlist in `settings.py` is the only authentication layer for remote commands. Keep it to your own user ID.
-- `!halt` is the emergency stop. Know the command before you go live.
-- Paper trade for a meaningful period before deploying real capital. The systemd setup supports a `paper=true` flag in `.env` that routes all orders to broker paper trading endpoints.
-
----
-
-## Development
-
-```bash
-# Run tests
-pytest tests/
-
-# Lint
-ruff check .
-
-# Type check
-mypy .
-```
-
-New strategies must implement the interface defined in `strategies/base.py`. They receive an aligned OHLCV DataFrame and a config dict, and return a `Signal` object. They must be stateless — given the same inputs, they must always return the same output.
+## To do
+- [ ] Strategy generation via HMM
+- [ ] ML down the line? (foreshadowing...)
 
 ---
 
