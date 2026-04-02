@@ -1,14 +1,14 @@
 # WARREN BOTFETT
 
-A systematic, event-driven algorithmic trading bot designed to run on a Raspberry Pi 5. Combines multi-strategy signal generation, layered risk management, and remote control via Discord — all within a modular architecture built for reliability over uptime-sensitive hardware.
+A systematic, event-driven algorithmic trading bot designed to run on a Raspberry Pi 5. Takes in data from the Alpaca SDK, runs it through a strategy that you bring on your own, and outputs buy/hold/sell signals. Includes layered risk management, and remote control via Discord - all within a modular architecture built for reliability over uptime-sensitive hardware.
 
 ---
 
 ## Overview
 
-This bot is not a latency-arbitrage machine. It is a strategy-driven system that generates signals from technical and (optionally) ML-based analysis, passes them through a risk layer, and executes via a broker abstraction — with full monitoring, structured logging, and a Discord command interface for remote control.
+Botfett is not a latency arbitrage machine. It is a strategy driven system that generates signals from a strategy you bring yourself, passes them through a risk layer, and executes via Alpaca, with full monitoring, structured logging, and a Discord command interface for remote control.
 
-It is designed to run headlessly on a Pi 5, survive reboots, and be observable and controllable entirely from your phone.
+It is designed to run headlessly on a Pi 5, survive reboots, and be observable and controllable entirely via a Discord server.
 
 ---
 
