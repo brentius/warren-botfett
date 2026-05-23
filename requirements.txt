@@ -1,3 +1,5 @@
 alpaca-py
+backtesting
 pandas
 python-dotenv
+pytest
