@@ -3,6 +3,8 @@
 import pandas as pd
 from backtesting import Backtest, Strategy
 
+from markov import fit as fit_hmm
+
 
 _RENAME = {"open": "Open", "high": "High", "low": "Low", "close": "Close", "volume": "Volume"}
 
@@ -38,6 +40,29 @@ class MomentumStrategy(Strategy):
         if ret > 0 and not self.position:
             self.buy()
         elif ret < 0 and self.position:
+            self.position.close()
+
+
+class HMMRegimeStrategy(Strategy):
+    """Long when the HMM labels the current bar 'bull'; flat otherwise.
+
+    Note: HMM is fit once in init() on the full series, so regime labels carry
+    in-sample look-ahead bias. Fine for an initial edge check; swap to
+    walk-forward fitting before trusting the numbers.
+    """
+
+    def init(self) -> None:
+        df = pd.DataFrame({"close": pd.Series(self.data.Close, index=self.data.index)})
+        self._regimes = fit_hmm(df).states
+
+    def next(self) -> None:
+        ts = self.data.index[-1]
+        if ts not in self._regimes.index:
+            return
+        regime = self._regimes.loc[ts]
+        if regime == "bull" and not self.position:
+            self.buy()
+        elif regime != "bull" and self.position:
             self.position.close()
 
 

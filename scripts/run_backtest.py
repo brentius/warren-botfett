@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import data  # noqa: E402
-from backtest import MomentumStrategy, run_many  # noqa: E402
+from backtest import HMMRegimeStrategy, MomentumStrategy, run_many  # noqa: E402
+
+_STRATEGIES = {"momentum": MomentumStrategy, "hmm": HMMRegimeStrategy}
 
 
 _METRIC_KEYS = (
@@ -25,6 +27,7 @@ _METRIC_KEYS = (
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Backtest a strategy over historical bars.")
+    parser.add_argument("--strategy", choices=sorted(_STRATEGIES), default="momentum")
     parser.add_argument("--symbols", default="AAPL,MSFT,NVDA")
     parser.add_argument("--days", type=int, default=365)
     parser.add_argument("--cash", type=float, default=100_000.0)
@@ -43,10 +46,12 @@ def main() -> None:
         print("No bars returned from Alpaca.")
         return
 
-    MomentumStrategy.lookback = args.lookback
-    MomentumStrategy.threshold = args.threshold
+    strategy_cls = _STRATEGIES[args.strategy]
+    if strategy_cls is MomentumStrategy:
+        MomentumStrategy.lookback = args.lookback
+        MomentumStrategy.threshold = args.threshold
 
-    results = run_many(bars, MomentumStrategy, cash=args.cash, commission=args.commission)
+    results = run_many(bars, strategy_cls, cash=args.cash, commission=args.commission)
 
     for symbol, stats in results.items():
         print(f"\n=== {symbol} ===")

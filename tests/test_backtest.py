@@ -5,7 +5,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from backtest import MomentumStrategy, run_symbol  # noqa: E402
+from backtest import HMMRegimeStrategy, MomentumStrategy, run_symbol  # noqa: E402
 
 
 def _make_bars(prices: list[float], start: str = "2024-01-01") -> pd.DataFrame:
@@ -39,6 +39,12 @@ def test_flat_series_no_trades():
     _, stats = run_symbol(_make_bars(prices), MomentumStrategy, cash=10_000.0)
     assert stats["# Trades"] == 0
     assert stats["Return [%]"] == 0
+
+
+def test_hmm_strategy_trades_on_rising_series():
+    prices = [100.0 + i for i in range(120)]
+    _, stats = run_symbol(_make_bars(prices), HMMRegimeStrategy, cash=10_000.0)
+    assert stats["# Trades"] > 0
 
 
 def test_determinism():

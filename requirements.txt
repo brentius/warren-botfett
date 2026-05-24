@@ -1,5 +1,6 @@
 alpaca-py
 backtesting
+hmmlearn
 pandas
 python-dotenv
 pytest
