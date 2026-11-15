@@ -1,0 +1,26 @@
+# Default configuration. Override with config/local.yaml (gitignored) or env vars.
+mode: paper            # paper | live | backtest
+
+venues:
+  polymarket:
+    enabled: true
+    host: https://clob.polymarket.com
+    chain_id: 137
+  kalshi:
+    enabled: false
+  equities:
+    enabled: false
+
+strategies:
+  - name: example_threshold
+    venue: polymarket
+    params:
+      edge_threshold: 0.05
+
+risk:
+  max_position_usd: 100
+  max_total_exposure_usd: 500
+  max_daily_loss_usd: 50
+
+logging:
+  level: INFO

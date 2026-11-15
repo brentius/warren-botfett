@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# secrets & local config
+.env
+config/local.yaml
+*.pem
+*.key
+
+# data & logs
+data/*
+!data/.gitkeep
+logs/
+*.log
+*.db
+*.sqlite
+*.parquet
